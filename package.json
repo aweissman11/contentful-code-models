@@ -17,6 +17,7 @@
     "type": "git",
     "url": "git+https://github.com/aweissman11/contentful-code-models.git"
   },
+  "license": "MIT",
   "files": [
     "dist"
   ],
