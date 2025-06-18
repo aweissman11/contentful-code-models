@@ -1,14 +1,12 @@
-import { runMigration, RunMigrationConfig } from "contentful-migration";
-import { AsyncMigrationFunction, ContentModel } from "../types";
+import { runMigration } from "contentful-migration";
+import { ContentModel, RunMigrationConfigWithAsync } from "../types";
 import { syncLocalModelsToContentful } from "./syncLocalModelsToContentful";
 
 export const runMigrations = async ({
   options,
-  migrationCallback,
   models,
 }: {
-  options: RunMigrationConfig;
-  migrationCallback?: AsyncMigrationFunction;
+  options: RunMigrationConfigWithAsync;
   models?: ContentModel[];
 }) => {
   await runMigration({
@@ -18,7 +16,7 @@ export const runMigrations = async ({
         await syncLocalModelsToContentful({ models, migration, context });
       }
 
-      migrationCallback?.({ models, migration, context });
+      options.migrationFunction?.({ models, migration, context });
     },
   });
 };

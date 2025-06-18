@@ -1,3 +1,5 @@
+import { ContentModel } from "../types";
+
 export const seo: ContentModel = {
   id: "seo",
   name: "SEO",

@@ -56,8 +56,18 @@ export type CreateOrEditContentTypeFunction = ({
 
 export type SyncOptions = {
   modelsBasePath?: string;
+  accessToken: string;
+  spaceId: string;
+  environmentId: string;
 };
 
 export type SyncContentfulToLocalFunction = (
   syncOptions?: SyncOptions,
 ) => Promise<void>;
+
+export type RunMigrationConfigWithAsync = Omit<
+  RunMigrationConfig,
+  "migrationFunction"
+> & {
+  migrationFunction?: AsyncMigrationFunction;
+};

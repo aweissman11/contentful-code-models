@@ -24,8 +24,6 @@ export const syncLocalModelsToContentful: AsyncMigrationFunction = async ({
       contentTypeId: m.id,
     });
 
-    console.log("contentType =>", model);
-
     if (m.description) {
       model.contentType.description(m.description);
     }

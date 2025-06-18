@@ -1,3 +1,5 @@
+import { ContentModel } from "../types";
+
 export const simpleHero: ContentModel = {
   id: "simpleHero",
   name: "Simple Hero",

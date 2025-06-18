@@ -1,3 +1,4 @@
+import { ContentModel } from "../types/index.js";
 import { complexRichText } from "./shared/complexRichText.js";
 import { stylesOnlyRichText } from "./shared/stylesOnlyRichText.js";
 

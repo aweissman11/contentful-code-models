@@ -1,3 +1,5 @@
+import { ContentModel } from "../types";
+
 export const landingPage: ContentModel = {
   id: "landingPage",
   name: "Landing Page",

@@ -1,4 +1,4 @@
-import { createClient } from "contentful-management";
+import contentfulManagement from "contentful-management";
 import "dotenv/config";
 import fs from "fs";
 import _ from "lodash";
@@ -22,19 +22,23 @@ const fieldDefaults = {
   defaultValue: undefined,
 };
 
-export const syncContentfulToLocal: SyncContentfulToLocalFunction = async ({
-  modelsBasePath,
-} = {}): Promise<void> => {
+export const syncContentfulToLocal: SyncContentfulToLocalFunction = async (
+  { modelsBasePath, accessToken, environmentId, spaceId } = {
+    accessToken: "",
+    environmentId: "",
+    spaceId: "",
+  },
+): Promise<void> => {
   console.log("Running sync function...");
-  const client = createClient(
+  const client = contentfulManagement.createClient(
     {
-      accessToken: process.env.CONTENTFUL_MANAGEMENT_TOKEN!,
+      accessToken,
     },
     {
       type: "plain",
       defaults: {
-        spaceId: process.env.CONTENTFUL_SPACE_ID!,
-        environmentId: process.env.CONTENTFUL_ENVIRONMENT!,
+        spaceId,
+        environmentId,
       },
     },
   );
