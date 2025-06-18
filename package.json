@@ -1,0 +1,63 @@
+{
+  "name": "contentful-code-models",
+  "version": "1.0.0",
+  "description": "A package for managing Contentful configurations",
+  "keywords": [
+    "typescript",
+    "contentful",
+    "cms",
+    "configuration"
+  ],
+  "homepage": "https://github.com/aweissman11/contentful-config-code",
+  "bugs": {
+    "url": "https://github.com/aweissman11/contentful-config-code/issues"
+  },
+  "author": "Aaron Weissman",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aweissman11/contentful-config-code.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "ci": "npm run build && npm run check-format && npm run test",
+    "format": "prettier --write .",
+    "check-format": "prettier --check .",
+    "check-exports": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
+    "test": "vitest run",
+    "dev": "vitest",
+    "local-release": "changeset version && changeset publish",
+    "prepublishOnly": "npm run ci",
+    "sync": "tsx ./src/scripts/runSync.ts",
+    "migrate": "tsx ./src/scripts/runMigrations.ts"
+  },
+  "dependencies": {
+    "contentful-management": "^11.53.0",
+    "contentful-migration": "^4.28.6",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.2",
+    "@changesets/cli": "^2.29.4",
+    "@eslint/eslintrc": "^3.3.1",
+    "@types/lodash": "^4.17.17",
+    "@types/node": "^24.0.3",
+    "dotenv": "^16.5.0",
+    "prettier": "^3.5.3",
+    "tsup": "^8.5.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.x",
+    "vitest": "^3.2.4"
+  }
+}
