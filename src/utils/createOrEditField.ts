@@ -13,7 +13,7 @@ export const createOrEditField = async ({
   type: FieldType;
 }): Promise<Field> => {
   const fieldExists = parent.contentModel?.fields.some(
-    (field: ContentField) => field.id === fieldId
+    (field: ContentField) => field.id === fieldId,
   );
 
   if (fieldExists) {
