@@ -30,7 +30,7 @@ export const syncContentfulToLocal: SyncContentfulToLocal = async ({
         spaceId: process.env.CONTENTFUL_SPACE_ID!,
         environmentId: process.env.CONTENTFUL_ENVIRONMENT!,
       },
-    }
+    },
   );
 
   const contentModels = (
@@ -50,7 +50,7 @@ export const syncContentfulToLocal: SyncContentfulToLocal = async ({
     console.log(`Processing model: ${model.sys.id}`);
 
     const editorLayout = editorInterfaces.find(
-      (ei) => ei.sys.contentType.sys.id === model.sys.id
+      (ei) => ei.sys.contentType.sys.id === model.sys.id,
     );
 
     // get local model from the file system
@@ -58,7 +58,7 @@ export const syncContentfulToLocal: SyncContentfulToLocal = async ({
     try {
       const localFilePath = path.resolve(
         path.join(modelsDir),
-        `${model.sys.id}.ts`
+        `${model.sys.id}.ts`,
       );
       const localModule = await import(pathToFileURL(localFilePath).toString());
       localModel = localModule?.[model.sys.id] ?? {};
@@ -134,7 +134,7 @@ export const syncContentfulToLocal: SyncContentfulToLocal = async ({
   const fileContent = `${contentModels
     .map(({ sys }) => `import { ${sys.id} } from "./${sys.id}";`)
     .join("\n")}\n\nexport const models:ContentModel[] = [${contentModels.map(
-    ({ sys }) => sys.id
+    ({ sys }) => sys.id,
   )}];\n`;
   fs.writeFileSync(filePath, fileContent, "utf8");
 
@@ -143,7 +143,7 @@ export const syncContentfulToLocal: SyncContentfulToLocal = async ({
   console.log("\x1b[34m", "Sync completed successfully!");
   console.log(
     "\x1b[34m",
-    "**You should probably format and commit your code now.**"
+    "**You should probably format and commit your code now.**",
   );
   console.log("\x1b[32m", "+++++++++++++++++++++++++++++++++++++++");
   console.log("\x1b[35m", "=======================================");
