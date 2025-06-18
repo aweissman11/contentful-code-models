@@ -1,4 +1,5 @@
 import type { Field, FieldType } from "contentful-migration";
+import { ContentField, FullModel } from "../types";
 
 export const createOrEditField = async ({
   parent,
@@ -12,7 +13,7 @@ export const createOrEditField = async ({
   type: FieldType;
 }): Promise<Field> => {
   const fieldExists = parent.contentModel?.fields.some(
-    (field: ContentField) => field.id === fieldId,
+    (field: ContentField) => field.id === fieldId
   );
 
   if (fieldExists) {

@@ -6,7 +6,7 @@ import type {
   IFieldOptions,
 } from "contentful-migration";
 
-type TEntryEditor =
+type EntryEditor =
   | {
       widgetNamespace: "builtin";
       widgetId: BuiltinEditor;
@@ -18,12 +18,12 @@ type TEntryEditor =
       settings?: IEditorInterfaceOptions;
     };
 
-interface IContentField extends IFieldOptions {
+interface ContentField extends IFieldOptions {
   id: string;
   name: string;
 }
 
-type TContentModel = {
+type ContentModel = {
   id: string;
   name: string;
   description: string;
@@ -32,41 +32,30 @@ type TContentModel = {
   configureEntryEditors?: EntryEditor[];
 };
 
-type TFullModel = {
+type FullModel = {
   contentType: ContentType;
-  contentModel?: TContentModel | null;
+  contentModel?: ContentModel | null;
 };
 
-type TAsyncMigrationFunction = ({
+type AsyncMigrationFunction = ({
   models,
   migration,
   context,
 }: {
-  models?: Array<TContentModel>;
+  models?: ContentModel[];
   migration: Migration;
   context: Parameters<MigrationFunction>[1] & MakeRequest;
 }) => Promise<void>;
 
-type TCreateOrEditContentTypeFunction = ({
+type CreateOrEditContentTypeFunction = ({
   migration: Migration,
   makeRequest: MakeRequest,
   contentTypeId: string,
   name: string,
 }) => Promise<FullModel>;
 
-type TSyncOptions = {
+type SyncOptions = {
   modelsBasePath?: string;
 };
 
-type TSyncContentfulToLocal = (syncOptions?: TSyncOptions) => Promise<void>;
-
-declare global {
-  type EntryEditor = TEntryEditor;
-  type ContentField = IContentField;
-  type ContentModel = TContentModel;
-  type FullModel = TFullModel;
-  type AsyncMigrationFunction = TAsyncMigrationFunction;
-  type CreateOrEditContentTypeFunction = TCreateOrEditContentTypeFunction;
-  type SyncOptions = TSyncOptions;
-  type SyncContentfulToLocal = TSyncContentfulToLocal;
-}
+type SyncContentfulToLocal = (syncOptions?: SyncOptions) => Promise<void>;

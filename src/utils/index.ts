@@ -1,2 +1,4 @@
-export { syncContentfulToLocal } from "./sync";
-export { runMigrations, syncLocalModelsToContentful } from "./migrate";
+export { syncContentfulToLocal } from "./syncContentfulToLocal";
+export { syncLocalModelsToContentful } from "./syncLocalModelsToContentful";
+export { runMigrations } from "./runMigrations";
+export * from "../types";

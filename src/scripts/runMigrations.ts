@@ -1,6 +1,6 @@
 import contentfulMigration, { RunMigrationConfig } from "contentful-migration";
 import "dotenv/config";
-import { runMigrations } from "../utils/migrate";
+import { runMigrations } from "../utils/syncLocalModelsToContentful";
 import { models } from "../models";
 
 const options: RunMigrationConfig = {

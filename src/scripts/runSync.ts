@@ -1,4 +1,4 @@
-import { syncContentfulToLocal } from "../utils/sync.js";
+import { syncContentfulToLocal } from "../utils/syncContentfulToLocal.js";
 
 syncContentfulToLocal({
   modelsBasePath: "./src/models",
