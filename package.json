@@ -8,14 +8,14 @@
     "cms",
     "configuration"
   ],
-  "homepage": "https://github.com/aweissman11/contentful-config-code",
+  "homepage": "https://github.com/aweissman11/contentful-code-models",
   "bugs": {
-    "url": "https://github.com/aweissman11/contentful-config-code/issues"
+    "url": "https://github.com/aweissman11/contentful-code-models/issues"
   },
   "author": "Aaron Weissman",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aweissman11/contentful-config-code.git"
+    "url": "git+https://github.com/aweissman11/contentful-code-models.git"
   },
   "files": [
     "dist"
