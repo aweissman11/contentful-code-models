@@ -1,5 +1,11 @@
 # contentful-code-models
 
+## 1.0.3
+
+### Patch Changes
+
+- 80f7eea: import type into synced models
+
 ## 1.0.2
 
 ### Patch Changes
