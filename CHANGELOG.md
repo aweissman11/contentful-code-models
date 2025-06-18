@@ -1,5 +1,11 @@
 # contentful-code-models
 
+## 1.0.4
+
+### Patch Changes
+
+- 45d2d0a: Clean up the interface so it doesn't rely on env vars
+
 ## 1.0.3
 
 ### Patch Changes
