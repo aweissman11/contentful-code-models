@@ -93,7 +93,20 @@ export const syncLocalModelsToContentful: AsyncMigrationFunction = async ({
     });
 
     if (m.configureEntryEditors) {
-      model.contentType.configureEntryEditors(m.configureEntryEditors);
+      // model.contentType.configureEntryEditors(m.configureEntryEditors);
+      for (const editor of m.configureEntryEditors) {
+        if (editor.widgetNamespace === "builtin") {
+          console.warn(
+            `The widgetNamespace 'builtin' is not for use on individual fields. Use 'editor-builtin' instead for built-in editors.`,
+          );
+        } else {
+          model.contentType.configureEntryEditor(
+            editor.widgetNamespace,
+            editor.widgetId,
+            editor.settings,
+          );
+        }
+      }
     }
 
     m.fields?.forEach((field, ix) => {

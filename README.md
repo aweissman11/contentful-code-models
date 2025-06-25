@@ -1,10 +1,10 @@
-# Contentful Config Code
+# Contentful Code Models
 
 A way to manage your contentful content types and models through code.
 
 ## Installation
 
-`npm install --save-dev contentful-config-code`
+`npm install --save-dev contentful-code-models`
 
 ## Overview
 
@@ -127,3 +127,4 @@ runMigrations({
   - [ ] Content Type annotations??
   - [ ] Generate types from the model files
   - [ ] Full delete of a field?? Maybe this just goes in a migration script rather than the config model
+- [ ] Fix regex flags in sync. We're getting null sometimes and that doesn't type match

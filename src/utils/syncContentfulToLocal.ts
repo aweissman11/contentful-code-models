@@ -45,7 +45,7 @@ export const syncContentfulToLocal: SyncContentfulToLocalFunction = async (
 
   const contentModels = (
     await client.contentType.getMany({ query: { limit: 200 } })
-  ).items;
+  ).items.filter((model) => model.sys.id !== "contentful-migration");
 
   const editorInterfaces = (
     await client.editorInterface.getMany({
@@ -141,11 +141,8 @@ export const syncContentfulToLocal: SyncContentfulToLocalFunction = async (
   if (!fs.existsSync(path.dirname(filePath))) {
     fs.mkdirSync(path.dirname(filePath), { recursive: true });
   }
-  const fileContent = `${contentModels
-    .map(
-      ({ sys }) =>
-        `import type { ContentModel } from 'contentful-code-models';\nimport { ${sys.id} } from "./${sys.id}";`,
-    )
+  const fileContent = `import type { ContentModel } from 'contentful-code-models';\n${contentModels
+    .map(({ sys }) => `import { ${sys.id} } from "./${sys.id}";`)
     .join("\n")}\n\nexport const models:ContentModel[] = [${contentModels.map(
     ({ sys }) => sys.id,
   )}];\n`;
