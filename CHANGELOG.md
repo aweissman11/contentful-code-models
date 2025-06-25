@@ -1,5 +1,11 @@
 # contentful-code-models
 
+## 1.0.5
+
+### Patch Changes
+
+- ad1aded: Fix some migration issues with editors
+
 ## 1.0.4
 
 ### Patch Changes
