@@ -1,5 +1,11 @@
 # contentful-code-models
 
+## 1.0.7
+
+### Patch Changes
+
+- 66424d6: check for existing
+
 ## 1.0.6
 
 ### Patch Changes
