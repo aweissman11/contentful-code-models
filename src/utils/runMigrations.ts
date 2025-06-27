@@ -1,6 +1,7 @@
 import { runMigration } from "contentful-migration";
 import { ContentModel, RunMigrationConfigWithAsync } from "../types";
 import { syncLocalModelsToContentful } from "./syncLocalModelsToContentful";
+import { syncLocalEditorsToContentful } from "./syncLocalEditorsToContentful";
 
 export const runMigrations = async ({
   options,
@@ -9,14 +10,34 @@ export const runMigrations = async ({
   options: RunMigrationConfigWithAsync;
   models?: ContentModel[];
 }) => {
-  await runMigration({
-    ...options,
-    migrationFunction: async (migration, context) => {
-      if (models) {
-        await syncLocalModelsToContentful({ models, migration, context });
-      }
+  if (models?.length) {
+    // run a migration of the models
+    await runMigration({
+      ...options,
+      migrationFunction: async (migration, context) => {
+        await syncLocalModelsToContentful({
+          models,
+          migration,
+          context,
+        });
+      },
+    });
 
-      options.migrationFunction?.({ models, migration, context });
-    },
-  });
+    // Now configure the editors
+    if (models.some((m) => m.configureEntryEditors)) {
+      await runMigration({
+        ...options,
+        migrationFunction: async (migration, context) => {
+          await syncLocalEditorsToContentful({
+            models,
+            migration,
+            context,
+            options,
+          });
+
+          options.migrationFunction?.({ models, migration, context });
+        },
+      });
+    }
+  }
 };

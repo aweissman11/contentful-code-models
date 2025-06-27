@@ -1,5 +1,11 @@
 # contentful-code-models
 
+## 1.0.6
+
+### Patch Changes
+
+- afbde70: Split editor and model config migrations to avoid rate limits
+
 ## 1.0.5
 
 ### Patch Changes

@@ -71,7 +71,15 @@ export const landingPage: ContentModel = {
       id: "modules",
       name: "Modules",
       type: "Array",
-      validations: [],
+      items: {
+        type: "Link",
+        validations: [
+          {
+            linkContentType: ["fiftyFifty"],
+          },
+        ],
+        linkType: "Entry",
+      },
     },
   ],
 };

@@ -91,33 +91,5 @@ export const syncLocalModelsToContentful: AsyncMigrationFunction = async ({
         omittedField.required(false).omitted(true).disabled(true);
       }
     });
-
-    if (m.configureEntryEditors) {
-      // model.contentType.configureEntryEditors(m.configureEntryEditors);
-      for (const editor of m.configureEntryEditors) {
-        if (editor.widgetNamespace === "builtin") {
-          console.warn(
-            `The widgetNamespace 'builtin' is not for use on individual fields. Use 'editor-builtin' instead for built-in editors.`,
-          );
-        } else {
-          model.contentType.configureEntryEditor(
-            editor.widgetNamespace,
-            editor.widgetId,
-            editor.settings,
-          );
-        }
-      }
-    }
-
-    m.fields?.forEach((field, ix) => {
-      if (ix === 0) {
-        model.contentType.moveField(field.id).toTheTop();
-      } else {
-        const prevField = m.fields[ix - 1];
-        if (prevField) {
-          model.contentType.moveField(field.id).afterField(prevField.id);
-        }
-      }
-    });
   }
 };

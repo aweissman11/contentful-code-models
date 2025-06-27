@@ -1,6 +1,6 @@
 {
   "name": "contentful-code-models",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A package for managing Contentful configurations",
   "keywords": [
     "typescript",

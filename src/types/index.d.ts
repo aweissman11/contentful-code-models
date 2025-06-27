@@ -24,6 +24,9 @@ export interface ContentField extends IFieldOptions {
 }
 
 export type ContentModel = {
+  sys?: {
+    id: string;
+  };
   id: string;
   name: string;
   description: string;
@@ -41,10 +44,12 @@ export type AsyncMigrationFunction = ({
   models,
   migration,
   context,
+  options,
 }: {
   models?: ContentModel[];
   migration: Migration;
   context: Parameters<MigrationFunction>[1] & MakeRequest;
+  options?: RunMigrationConfigWithAsync;
 }) => Promise<void>;
 
 export type CreateOrEditContentTypeFunction = ({

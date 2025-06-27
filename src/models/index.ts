@@ -4,6 +4,7 @@ import { landingPage } from "./landingPage.js";
 import { seo } from "./seo.js";
 import { generalContent } from "./generalContent.js";
 import { ContentModel } from "../types/index.js";
+import { fiftyFifty } from "./fiftyFifty.js";
 
 export const models: ContentModel[] = [
   link,
@@ -11,4 +12,5 @@ export const models: ContentModel[] = [
   landingPage,
   seo,
   generalContent,
+  fiftyFifty,
 ];

@@ -1,4 +1,3 @@
-import contentfulManagement from "contentful-management";
 import "dotenv/config";
 import fs from "fs";
 import _ from "lodash";
@@ -10,6 +9,7 @@ import {
   EntryEditor,
   SyncContentfulToLocalFunction,
 } from "../types";
+import { createManagementClient } from "./createManagementClient";
 
 const fieldDefaults = {
   omitted: false,
@@ -30,18 +30,11 @@ export const syncContentfulToLocal: SyncContentfulToLocalFunction = async (
   },
 ): Promise<void> => {
   console.log("Running sync function...");
-  const client = contentfulManagement.createClient(
-    {
-      accessToken,
-    },
-    {
-      type: "plain",
-      defaults: {
-        spaceId,
-        environmentId,
-      },
-    },
-  );
+  const client = createManagementClient({
+    accessToken,
+    environmentId,
+    spaceId,
+  });
 
   const contentModels = (
     await client.contentType.getMany({ query: { limit: 200 } })
@@ -100,6 +93,7 @@ export const syncContentfulToLocal: SyncContentfulToLocalFunction = async (
         .filter(Boolean) as ContentField[],
     };
 
+    // TODO: Maybe get editors instead of controls
     if (
       editorLayout?.controls?.length &&
       editorLayout.controls.some((c) => c.widgetId)
