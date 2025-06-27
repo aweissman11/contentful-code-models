@@ -19,10 +19,12 @@ export const runMigrations = async ({
           models,
           migration,
           context,
+          options,
         });
       },
     });
 
+    // TODO: This isn't currently working
     // Now configure the editors
     if (models.some((m) => m.configureEntryEditors)) {
       await runMigration({

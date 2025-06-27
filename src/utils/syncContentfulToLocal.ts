@@ -11,7 +11,7 @@ import {
 } from "../types";
 import { createManagementClient } from "./createManagementClient";
 
-const fieldDefaults = {
+export const fieldDefaults = {
   omitted: false,
   disabled: false,
   required: false,
@@ -38,14 +38,13 @@ export const syncContentfulToLocal: SyncContentfulToLocalFunction = async (
 
   const contentModels = (
     await client.contentType.getMany({ query: { limit: 200 } })
-  ).items.filter((model) => model.sys.id !== "contentful-migration");
+  ).items.filter((model) => model.sys.id !== "contentful-migrations");
 
   const editorInterfaces = (
     await client.editorInterface.getMany({
       query: { limit: 200 },
     })
   ).items;
-
   const basePath = modelsBasePath ?? process.cwd(); // fallback to project root
   const modelsDir = path.resolve(basePath);
 
@@ -89,25 +88,28 @@ export const syncContentfulToLocal: SyncContentfulToLocalFunction = async (
           omitted: field.omitted,
           deleted: field.deleted,
           defaultValue: field.defaultValue,
+          items: field.items,
         }))
         .filter(Boolean) as ContentField[],
     };
 
-    // TODO: Maybe get editors instead of controls
     if (
       editorLayout?.controls?.length &&
       editorLayout.controls.some((c) => c.widgetId)
     ) {
       parsedModel.configureEntryEditors = editorLayout.controls
-        ?.map((control) => {
-          if (!control.widgetId) return null;
+        ?.map((c) => {
+          if (!c.widgetId) return null;
 
           return {
             // widgetNamespace comes back as 'builtin' when it needs to be set as 'editor-builtin'
-            widgetNamespace: "editor-builtin",
-            widgetId: control.widgetId,
+            widgetNamespace:
+              c.widgetNamespace === "builtin"
+                ? "editor-builtin"
+                : c.widgetNamespace,
+            widgetId: c.widgetId,
             settings: {
-              fieldId: control.fieldId,
+              fieldId: c.fieldId,
             },
           };
         })

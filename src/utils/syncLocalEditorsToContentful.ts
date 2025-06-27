@@ -31,7 +31,7 @@ export const syncLocalEditorsToContentful: AsyncMigrationFunction = async ({
     spaceId,
   });
 
-  const editorInterfaces = (
+  const existingEditors = (
     await client.editorInterface.getMany({
       query: { limit: 200 },
     })
@@ -45,7 +45,7 @@ export const syncLocalEditorsToContentful: AsyncMigrationFunction = async ({
       contentTypeId: m.id,
     });
 
-    const modelEditorLayout = editorInterfaces.find(
+    const modelEditorLayout = existingEditors.find(
       (ei) => ei.sys.contentType.sys.id === model.contentModel?.sys?.id,
     );
 
@@ -54,43 +54,55 @@ export const syncLocalEditorsToContentful: AsyncMigrationFunction = async ({
     }
 
     if (m.configureEntryEditors) {
+      // TODO: Figure out why this won't work
       // model.contentType.configureEntryEditors(m.configureEntryEditors);
       for (const editor of m.configureEntryEditors) {
-        if (editor.widgetNamespace === "builtin") {
-          console.warn(
-            `The widgetNamespace 'builtin' is not for use on individual fields. Use 'editor-builtin' instead for built-in editors.`,
+        const existingEditor = modelEditorLayout?.controls?.find(
+          (e) => e.settings?.fieldId === editor.settings?.fieldId,
+        );
+        if (existingEditor) {
+          existingEditor.widgetNamespace =
+            existingEditor?.widgetNamespace === "builtin"
+              ? "editor-builtin"
+              : existingEditor?.widgetNamespace;
+        }
+        const editorHasChanged = !isEqual(editor, existingEditor);
+        if (editorHasChanged) {
+          model.contentType.configureEntryEditor(
+            editor.widgetNamespace,
+            editor.widgetId,
+            editor.settings,
           );
         } else {
-          const existingEditor = modelEditorLayout?.editors?.find(
-            (e) => e.settings?.fieldId === editor.settings?.fieldId,
+          console.log(
+            "Skipping editor configuration for",
+            editor.settings?.fieldId,
+            "as it matches the existing editor layout.",
           );
-          const editorHasChanged = !isEqual(editor, existingEditor);
-          if (editorHasChanged) {
-            model.contentType.configureEntryEditor(
-              editor.widgetNamespace,
-              editor.widgetId,
-              editor.settings,
-            );
-          } else {
-            console.log(
-              "Skipping editor configuration for",
-              editor.widgetId,
-              "as it matches the existing editor layout.",
-            );
-          }
         }
       }
     }
 
-    m.fields?.forEach((field, ix) => {
-      if (ix === 0) {
-        model.contentType.moveField(field.id).toTheTop();
-      } else {
-        const prevField = m.fields[ix - 1];
-        if (prevField) {
-          model.contentType.moveField(field.id).afterField(prevField.id);
+    // check if the order of fields has changed
+    const existingFields = modelEditorLayout?.controls?.map((c) => c.fieldId);
+
+    const localFields = m.fields?.map((f) => f.id);
+    const orderHasChanged =
+      !existingFields ||
+      existingFields.length !== localFields?.length ||
+      !isEqual(existingFields, localFields);
+
+    if (orderHasChanged) {
+      m.fields?.forEach((field, ix) => {
+        if (ix === 0) {
+          model.contentType.moveField(field.id).toTheTop();
+        } else {
+          const prevField = m.fields[ix - 1];
+          if (prevField) {
+            model.contentType.moveField(field.id).afterField(prevField.id);
+          }
         }
-      }
-    });
+      });
+    }
   }
 };

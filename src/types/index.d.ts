@@ -6,17 +6,11 @@ import type {
   IFieldOptions,
 } from "contentful-migration";
 
-export type EntryEditor =
-  | {
-      widgetNamespace: "builtin";
-      widgetId: BuiltinEditor;
-      settings?: IEditorInterfaceOptions;
-    }
-  | {
-      widgetNamespace: "editor-builtin" | "extension" | "app";
-      widgetId: string;
-      settings?: IEditorInterfaceOptions;
-    };
+export type EntryEditor = {
+  widgetNamespace: "editor-builtin" | "extension" | "app";
+  widgetId: BuiltinEditor;
+  settings?: IEditorInterfaceOptions;
+};
 
 export interface ContentField extends IFieldOptions {
   id: string;
