@@ -1,130 +1,393 @@
 # Contentful Code Models
 
-A way to manage your contentful content types and models through code.
+A TypeScript library for managing Contentful content types and models through code, enabling version control, code reviews, and programmatic content model management.
 
-## Installation
+## 🚀 Features
 
-`npm install --save-dev contentful-code-models`
+- **Code-First Approach**: Define your Contentful content models in TypeScript
+- **Bi-directional Sync**: Pull existing models from Contentful or push local models to Contentful
+- **Migration Support**: Run complex data migrations with full TypeScript support
+- **Type Safety**: Full TypeScript definitions for all content model properties
+- **Editor Interface Support**: Manage field controls and editor layouts
+- **Field Validation**: Define and manage field validations in code
 
-## Overview
+## 📦 Installation
 
-There are two main ways to use this library.
+```bash
+npm install --save-dev contentful-code-models
+```
 
-First, you can pull down an existing contentful package and sync it into your current repository. This is done by using the `syncContentfulToLocal` function.
+## 🛠️ Setup
 
-Second, you can use this library to manage your contentful configuration in your codebase. This is similar to how other CMS's might manage their content models (think Sanity, or Payload, etc).
+### Environment Variables
 
-Models look something like this, but look through the models directory in this package for more thorough examples:
+Create a `.env` file in your project root:
+
+```bash
+# Required for both sync and migration operations
+CONTENTFUL_SPACE_ID=your_space_id
+CONTENTFUL_ENVIRONMENT=master
+
+# Required for syncing FROM Contentful (read operations)
+CONTENTFUL_MANAGEMENT_TOKEN=your_management_token
+
+# Required for migrating TO Contentful (write operations)
+CONTENTFUL_MANAGEMENT_TOKEN=your_management_token
+```
+
+### TypeScript Configuration
+
+Ensure your `tsconfig.json` supports ES modules:
+
+```json
+{
+  "compilerOptions": {
+    "module": "ES2022",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
+  }
+}
+```
+
+## 📖 Usage
+
+### 1. Syncing FROM Contentful (Pull Existing Models)
+
+Use this when you have existing content types in Contentful and want to manage them through code:
 
 ```typescript
-import { complexRichText } from "./shared/complexRichText.js";
-import { stylesOnlyRichText } from "./shared/stylesOnlyRichText.js";
+import { syncContentfulToLocal } from "contentful-code-models";
 
-export const generalContent: ContentModel = {
-  id: "generalContent",
-  name: "General Content!",
-  description: "Content type for general content blocks.",
-  displayField: "internalTitle",
+await syncContentfulToLocal({
+  modelsBasePath: "./src/models", // Where to save model files
+  options: {
+    accessToken: process.env.CONTENTFUL_MANAGEMENT_TOKEN!,
+    spaceId: process.env.CONTENTFUL_SPACE_ID!,
+    environmentId: process.env.CONTENTFUL_ENVIRONMENT || "master",
+  },
+});
+```
+
+This will:
+
+- Create TypeScript files for each content type in your specified directory
+- Include all field definitions, validations, and editor interface settings
+- Generate an `index.ts` file that exports all models as an array
+
+### 2. Creating Models in Code
+
+Define your content models using TypeScript:
+
+```typescript
+// src/models/blogPost.ts
+import type { ContentModel } from "contentful-code-models";
+
+export const blogPost: ContentModel = {
+  sys: {
+    id: "blogPost",
+  },
+  name: "Blog Post",
+  description: "A blog post content type",
+  displayField: "title",
   fields: [
     {
       id: "title",
       name: "Title",
       type: "Symbol",
-      validations: [],
-    },
-    {
-      id: "body",
-      type: "RichText",
-      required: false,
+      required: true,
       validations: [
         {
-          enabledNodeTypes: [],
+          size: { max: 100 },
         },
+      ],
+    },
+    {
+      id: "slug",
+      name: "URL Slug",
+      type: "Symbol",
+      required: true,
+      validations: [
         {
-          enabledMarks: ["bold", "italic", "underline"],
+          regexp: {
+            pattern: "^[a-z0-9-]+$",
+            flags: "i",
+          },
         },
+      ],
+    },
+    {
+      id: "content",
+      name: "Content",
+      type: "RichText",
+      required: true,
+      validations: [
+        {
+          enabledMarks: ["bold", "italic", "underline", "code"],
+          enabledNodeTypes: [
+            "heading-1",
+            "heading-2",
+            "heading-3",
+            "paragraph",
+            "unordered-list",
+            "ordered-list",
+          ],
+        },
+      ],
+    },
+    {
+      id: "publishDate",
+      name: "Publish Date",
+      type: "Date",
+      required: true,
+    },
+    {
+      id: "tags",
+      name: "Tags",
+      type: "Array",
+      items: {
+        type: "Symbol",
+      },
+    },
+  ],
+  // Optional: Define editor interface
+  editorInterface: {
+    controls: [
+      {
+        fieldId: "title",
+        widgetId: "singleLine",
+      },
+      {
+        fieldId: "slug",
+        widgetId: "slugEditor",
+      },
+      {
+        fieldId: "content",
+        widgetId: "richTextEditor",
+      },
+      {
+        fieldId: "publishDate",
+        widgetId: "datePicker",
+      },
+      {
+        fieldId: "tags",
+        widgetId: "tagEditor",
+      },
+    ],
+  },
+};
+```
+
+### 3. Migrating TO Contentful (Push Local Models)
+
+Create a migration script to push your local models to Contentful:
+
+```typescript
+// scripts/migrate.ts
+import "dotenv/config";
+import { runMigrations } from "contentful-code-models";
+import { models } from "../src/models"; // Your model definitions
+
+const migrationFunction = async ({ models, migration, context }) => {
+  console.log(`Migrating ${models?.length} content types...`);
+
+  // Custom migration logic can go here
+  // For example, data transformations when changing field types
+
+  // Example: Transform existing entries when changing a field
+  // migration.transformEntries({
+  //   contentType: 'blogPost',
+  //   from: ['oldField'],
+  //   to: ['newField'],
+  //   transformEntryForLocale: (fromFields, currentLocale) => ({
+  //     newField: fromFields.oldField?.[currentLocale]?.toUpperCase()
+  //   })
+  // });
+};
+
+await runMigrations({
+  models,
+  options: {
+    spaceId: process.env.CONTENTFUL_SPACE_ID!,
+    accessToken: process.env.CONTENTFUL_MANAGEMENT_TOKEN!,
+    environmentId: process.env.CONTENTFUL_ENVIRONMENT!,
+    yes: true, // Skip confirmation prompts
+    migrationFunction,
+  },
+});
+```
+
+### 4. Advanced Model Composition
+
+You can create reusable field definitions and compose complex models:
+
+```typescript
+// src/models/shared/richTextFields.ts
+export const basicRichText = {
+  type: "RichText" as const,
+  validations: [
+    {
+      enabledMarks: ["bold", "italic"],
+      enabledNodeTypes: ["paragraph", "heading-2", "unordered-list"],
+    },
+  ],
+};
+
+export const complexRichText = {
+  type: "RichText" as const,
+  validations: [
+    {
+      enabledMarks: ["bold", "italic", "underline", "code"],
+      enabledNodeTypes: [
+        "paragraph",
+        "heading-1",
+        "heading-2",
+        "heading-3",
+        "unordered-list",
+        "ordered-list",
+        "blockquote",
+        "embedded-entry-block",
+        "embedded-asset-block",
       ],
     },
   ],
 };
-```
 
-This library relies on two packages from contentful: [contentful-management](https://www.npmjs.com/package/contentful-management) and [contentful-migration](https://www.npmjs.com/package/contentful-migration).
+// src/models/article.ts
+import { basicRichText } from "./shared/richTextFields";
 
-## Syncing from contentful
-
-```typescript
-import { syncContentfulToLocal } from "../utils/syncContentfulToLocal.js";
-
-syncContentfulToLocal({
-  modelsBasePath: "./src/models",
-  accessToken: process.env.CONTENTFUL_ACCESS_TOKEN!,
-  spaceId: process.env.CONTENTFUL_SPACE_ID!,
-  environmentId: process.env.CONTENTFUL_ENVIRONMENT_ID ?? "master",
-})
-  .then(() => {
-    console.log("Sync completed successfully.");
-  })
-  .catch((error) => {
-    console.error("Sync failed:", error);
-  });
-```
-
-## Migrating from a local configuration to contentful
-
-```typescript
-import "dotenv/config";
-import { models } from "../models";
-import { AsyncMigrationFunction } from "../types";
-import { runMigrations } from "../utils";
-
-export const migrationFunction: AsyncMigrationFunction = async ({
-  models,
-  migration,
-  context,
-}): Promise<void> => {
-  console.log("Running migration function...");
-
-  // migration functions go here. This might be somewhere you manipulate data like taking a field that was previously plain text and converting it to rich text format. See the contentful-migration documentation for how to transformEntries
-  const modelIds = models?.map((m) => m.id);
-  console.log("Models to migrate:", modelIds);
+export const article: ContentModel = {
+  sys: { id: "article" },
+  name: "Article",
+  fields: [
+    {
+      id: "title",
+      name: "Title",
+      type: "Symbol",
+      required: true,
+    },
+    {
+      id: "summary",
+      name: "Summary",
+      ...basicRichText,
+    },
+    // ... other fields
+  ],
 };
-
-const options = {
-  spaceId: process.env.CONTENTFUL_SPACE_ID!,
-  accessToken: process.env.CONTENTFUL_MANAGEMENT_TOKEN!,
-  environmentId: process.env.CONTENTFUL_ENVIRONMENT!,
-  yes: true,
-  migrationFunction,
-};
-
-runMigrations({
-  models,
-  options,
-})
-  .then(() => {
-    console.log("Migration completed successfully.");
-  })
-  .catch((error) => {
-    console.error("Migration failed:", error);
-  });
 ```
 
-## Notes
+## 🔧 API Reference
 
-- Running the sync command would override the use of the shared content model objects. So `generalContent` will no longer reference the two types of rich text. That being said, the way they are set up now will work fine for migrate.
-- If you need to sync down the models from contentful, be careful what's committed and migrated back up
+### `syncContentfulToLocal(options)`
 
-## TODOS:
+Pulls content types from Contentful and generates local TypeScript model files.
 
-- [x] ~~Don't delete fields, just omit them from the API response~~ [06-16-25]
-- [x] ~~Needs an onboarding process to take an existing Contentful space and turn it into config objects~~ [06-17-25]
-- [x] ~~Field Movement~~ [06-16-25]
-- [ ] Locales
-- [ ] Write tests
-- [ ] LATER
-  - [ ] Content Type editor interfaces
-  - [ ] Content Type annotations??
-  - [ ] Generate types from the model files
-  - [ ] Full delete of a field?? Maybe this just goes in a migration script rather than the config model
-- [ ] Fix regex flags in sync. We're getting null sometimes and that doesn't type match
+**Parameters:**
+
+- `modelsBasePath?: string` - Directory to save model files (default: `process.cwd()`)
+- `options.accessToken: string` - Contentful Management API token
+- `options.spaceId: string` - Contentful space ID
+- `options.environmentId: string` - Contentful environment ID
+
+**Returns:** `Promise<PlainClientAPI>` - The Contentful management client instance
+
+### `runMigrations(options)`
+
+Pushes local content models to Contentful and runs migrations.
+
+**Parameters:**
+
+- `models: ContentModel[]` - Array of content model definitions
+- `options.spaceId: string` - Contentful space ID
+- `options.accessToken: string` - Contentful Management API token
+- `options.environmentId: string` - Contentful environment ID
+- `options.yes?: boolean` - Skip confirmation prompts
+- `options.migrationFunction?: Function` - Custom migration logic
+
+## 🎯 Best Practices
+
+### 1. Project Structure
+
+```
+src/
+├── models/
+│   ├── shared/           # Reusable field definitions
+│   │   ├── richText.ts
+│   │   └── validation.ts
+│   ├── blogPost.ts
+│   ├── author.ts
+│   └── index.ts         # Export all models
+├── scripts/
+│   ├── sync.ts          # Sync from Contentful
+│   └── migrate.ts       # Migrate to Contentful
+```
+
+### 2. Model Organization
+
+- Keep shared field definitions in a `shared/` directory
+- Use descriptive names for content type IDs
+- Include comprehensive field validations
+- Document complex field relationships
+
+### 3. Migration Strategy
+
+- Always test migrations in a development environment first
+- Use semantic versioning for migration scripts
+- Keep migration functions focused and atomic
+- Back up your Contentful space before major migrations
+
+### 4. Version Control
+
+- Commit all model files to version control
+- Use meaningful commit messages for model changes
+- Review model changes through pull requests
+- Tag releases when pushing to production
+
+## 🚨 Important Notes
+
+- **Sync vs Migration**: Syncing pulls FROM Contentful and overwrites local files. Migration pushes TO Contentful and may overwrite remote content types.
+- **Field Deletion**: Fields are omitted rather than deleted to prevent data loss. Use migration scripts for explicit field removal.
+- **Environment Safety**: Always test in development environments before applying to production.
+- **Backup Strategy**: Consider backing up your Contentful space before running migrations.
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**TypeScript Errors**: Ensure your TypeScript configuration supports ES modules and the latest syntax features.
+
+**Authentication Errors**: Verify your management token has the correct permissions and hasn't expired.
+
+**Field Validation Errors**: Check that field validations match Contentful's validation schema exactly.
+
+**Migration Failures**: Review the migration logs and ensure your local models are valid before attempting to migrate.
+
+## 📝 Contributing
+
+Contributions are welcome! Please read our contributing guidelines and submit pull requests for any improvements.
+
+## 📄 License
+
+MIT License - see LICENSE file for details.
+
+```
+
+## 📋 Roadmap
+
+### Completed ✅
+- [x] Field omission instead of deletion (prevents data loss)
+- [x] Onboarding process for existing Contentful spaces
+- [x] Field movement and reordering
+- [x] Comprehensive test suite
+
+### In Progress 🚧
+- [ ] Locale management and internationalization
+- [ ] Enhanced field validation patterns
+
+### Future Features 🔮
+- [ ] Content type editor interface customization
+- [ ] Content type annotations and metadata
+- [ ] Automatic TypeScript type generation from models
+- [ ] Advanced field deletion with safety checks
+- [ ] Visual model editor and diff viewer
+```
