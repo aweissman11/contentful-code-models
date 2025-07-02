@@ -1,9 +1,11 @@
-import { ContentModel } from "../types/index.js";
-import { complexRichText } from "./shared/complexRichText.js";
-import { stylesOnlyRichText } from "./shared/stylesOnlyRichText.js";
+import type { ContentModel } from "../types";
+import { complexRichText } from "./shared/complexRichText";
+import { stylesOnlyRichText } from "./shared/stylesOnlyRichText";
 
 export const generalContent: ContentModel = {
-  id: "generalContent",
+  sys: {
+    id: "generalContent",
+  },
   name: "General Content",
   description: "Content type for general content blocks.",
   displayField: "internalTitle",

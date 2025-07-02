@@ -5,10 +5,9 @@ import {
 } from "contentful-management";
 
 export type ContentModel = {
-  sys?: {
+  sys: {
     id: string;
   };
-  id: string;
   name: string;
   description: string;
   displayField: string | null;
@@ -22,14 +21,3 @@ export type CreateOrEditContentTypeFunction = ({
   contentTypeId: string,
   name: string,
 }) => Promise<FullModel>;
-
-export type SyncOptions = {
-  modelsBasePath?: string;
-  accessToken: string;
-  spaceId: string;
-  environmentId: string;
-};
-
-export type SyncContentfulToLocalFunction = (
-  syncOptions?: SyncOptions
-) => Promise<void>;

@@ -1,7 +1,9 @@
-import { ContentModel } from "../types";
+import type { ContentModel } from "../types";
 
 export const seo: ContentModel = {
-  id: "seo",
+  sys: {
+    id: "seo",
+  },
   name: "SEO",
   description: "Metadata for Search Engine Optimization",
   displayField: "title",

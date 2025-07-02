@@ -1,10 +1,12 @@
-import { ContentModel } from "../types";
+import type { ContentModel } from "../types";
 
 export const link: ContentModel = {
-  id: "link",
+  sys: {
+    id: "link",
+  },
   name: "Link",
   description: "Content type for links to other entries or assets.",
-  displayField: null,
+  displayField: "internalTitle",
   fields: [
     {
       omitted: false,

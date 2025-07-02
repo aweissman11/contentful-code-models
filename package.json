@@ -41,7 +41,7 @@
     "dev": "vitest",
     "local-release": "changeset version && changeset publish",
     "prepublishOnly": "npm run ci",
-    "sync": "tsx ./src/scripts/runSync.ts",
+    "sync": "tsx ./src/scripts/runSync.ts && npm run format",
     "migrate": "tsx ./src/scripts/runMigrate.ts"
   },
   "dependencies": {

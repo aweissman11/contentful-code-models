@@ -43,19 +43,19 @@ export const runMigrations = async ({
     try {
       for (const model of models) {
         const existingContentType = contentModels.items.find(
-          (m) => m.sys.id === model.id
+          (m) => m.sys.id === model.sys.id,
         );
         if (!existingContentType) {
           const createdModel = await client.contentType.createWithId(
             {
-              contentTypeId: model.id,
+              contentTypeId: model.sys.id,
             },
             {
               name: model.name,
               description: model.description,
               displayField: model.displayField ?? undefined,
               fields: model.fields,
-            }
+            },
           );
 
           createdContentTypes.push(createdModel.sys.id);
@@ -74,7 +74,7 @@ export const runMigrations = async ({
           const updatedModel = await client.contentType.update(
             {
               ...options,
-              contentTypeId: model.id,
+              contentTypeId: model.sys.id,
             },
             {
               ...existingContentType,
@@ -85,7 +85,7 @@ export const runMigrations = async ({
                 model.fields.find((f) => f.type === "Symbol")?.id ??
                 "",
               fields,
-            }
+            },
           );
 
           console.log(
@@ -93,29 +93,29 @@ export const runMigrations = async ({
             updatedModel.sys.id,
             "version",
             updatedModel.sys.version,
-            "⬆️"
+            "⬆️",
           );
         }
       }
 
       for (const editor of editorInterfaces.items) {
         const model = models.find(
-          (m) => m.id === editor.sys.contentType.sys.id
+          (m) => m.sys.id === editor.sys.contentType.sys.id,
         );
         if (model && model.editorInterface) {
           const updatedEditor = await client.editorInterface.update(
             {
               ...options,
-              contentTypeId: model.id,
+              contentTypeId: model.sys.id,
             },
             {
               ...editor,
               ...model.editorInterface,
-            }
+            },
           );
-          console.log("updated editor interface for", model.id, "📋");
-          if (originalEditorInterfaces[model.id]) {
-            originalEditorInterfaces[model.id].sys = updatedEditor.sys;
+          console.log("updated editor interface for", model.sys.id, "📋");
+          if (originalEditorInterfaces[model.sys.id]) {
+            originalEditorInterfaces[model.sys.id].sys = updatedEditor.sys;
           }
         } else {
           console.log("no editor interface for", editor.sys.contentType.sys.id);
@@ -134,14 +134,14 @@ export const runMigrations = async ({
               ...model.sys,
               version: model.sys.version + 1,
             },
-          }
+          },
         );
         console.log(
           "published model",
           publishedModel.sys.id,
           "version:",
           publishedModel.sys.version,
-          "📤"
+          "📤",
         );
         if (originalContentTypes[model.sys.id]) {
           originalContentTypes[model.sys.id].sys = publishedModel.sys;
@@ -157,34 +157,39 @@ export const runMigrations = async ({
       console.error("\n\n\n\x1b[31m", error, "\n\n\n");
 
       for (const model of models) {
-        if (createdContentTypes.includes(model.id)) {
+        if (createdContentTypes.includes(model.sys.id)) {
           // delete the content type
           await client.contentType.delete({
-            contentTypeId: model.id,
+            contentTypeId: model.sys.id,
           });
-          console.log("deleted content type", model.id, "🗑️");
+          console.log("deleted content type", model.sys.id, "🗑️");
         } else {
-          const originalEditorInterface = originalEditorInterfaces[model.id];
+          const originalEditorInterface =
+            originalEditorInterfaces[model.sys.id];
           if (originalEditorInterface) {
             await client.editorInterface.update(
               {
                 ...options,
-                contentTypeId: model.id,
+                contentTypeId: model.sys.id,
               },
               {
                 ...originalEditorInterface,
-              }
+              },
             );
-            console.log("rolled back editor interface for", model.id, "🛞⬅️");
+            console.log(
+              "rolled back editor interface for",
+              model.sys.id,
+              "🛞⬅️",
+            );
           }
 
-          const originalContentType = originalContentTypes[model.id];
+          const originalContentType = originalContentTypes[model.sys.id];
 
           if (originalContentType) {
             const rolledBack = await client.contentType.update(
               {
                 ...options,
-                contentTypeId: model.id,
+                contentTypeId: model.sys.id,
               },
               {
                 ...originalContentType,
@@ -192,7 +197,7 @@ export const runMigrations = async ({
                   ...originalContentType.sys,
                   version: originalContentType.sys.version + 1,
                 },
-              }
+              },
             );
             await client.contentType.publish(
               {
@@ -205,9 +210,9 @@ export const runMigrations = async ({
                   ...rolledBack.sys,
                   version: rolledBack.sys.version,
                 },
-              }
+              },
             );
-            console.log("rolled back content type for", model.id, "🛞⬅️");
+            console.log("rolled back content type for", model.sys.id, "🛞⬅️");
           }
         }
       }

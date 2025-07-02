@@ -1,7 +1,9 @@
-import { ContentModel } from "../types";
+import type { ContentModel } from "../types";
 
 export const simpleHero: ContentModel = {
-  id: "simpleHero",
+  sys: {
+    id: "simpleHero",
+  },
   name: "Simple Hero",
   description:
     "Content type for a simple hero section with a title and subtitle.",
@@ -87,7 +89,7 @@ export const simpleHero: ContentModel = {
       },
       {
         fieldId: "heroType",
-        widgetId: "dropdown!!",
+        widgetId: "dropdown",
         widgetNamespace: "builtin",
       },
     ],

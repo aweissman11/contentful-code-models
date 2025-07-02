@@ -1,7 +1,9 @@
-import { ContentModel } from "../types";
+import type { ContentModel } from "../types";
 
 export const fiftyFifty: ContentModel = {
-  id: "fiftyFifty",
+  sys: {
+    id: "fiftyFifty",
+  },
   name: "Fifty Fifty",
   description:
     "Content type for a fifty fifty section with a title and subtitle.",
