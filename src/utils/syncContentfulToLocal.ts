@@ -95,8 +95,7 @@ export const syncContentfulToLocal = async ({
       fs.mkdirSync(path.dirname(filePath), { recursive: true });
     }
 
-    // const fileContent = `import type { ContentModel } from 'contentful-code-models';\n\nexport const ${
-    const fileContent = `import type { ContentModel } from '../types';\n\nexport const ${
+    const fileContent = `import type { ContentModel } from 'contentful-code-models';\n\nexport const ${
       model.sys.id
     }:ContentModel = ${JSON.stringify(mergedModel, null, 2)};\n`;
     fs.writeFileSync(filePath, fileContent, "utf8");
