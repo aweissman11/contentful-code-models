@@ -362,7 +362,72 @@ src/
 
 **Migration Failures**: Review the migration logs and ensure your local models are valid before attempting to migrate.
 
-## 📝 Contributing
+## �️ Development
+
+### Prerequisites
+
+- Node.js 18+ and npm
+- Git
+
+### Getting Started
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/aweissman11/contentful-code-models.git
+cd contentful-code-models
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Set up your environment variables by copying `.env.example` to `.env` and filling in your Contentful credentials.
+
+### Available Scripts
+
+- `npm test` - Run the test suite
+- `npm run test:coverage` - Run tests with coverage report
+- `npm run dev` - Run tests in watch mode
+- `npm run format` - Format code with Prettier
+- `npm run check-format` - Check code formatting
+- `npm run build` - Build the package for distribution
+- `npm run precommit` - Run formatting and tests (used by pre-commit hook)
+
+### Pre-commit Hooks
+
+This project uses [Husky](https://typicode.github.io/husky/) to run pre-commit hooks that ensure code quality:
+
+1. **Code Formatting**: Automatically formats code with Prettier
+2. **Test Coverage**: Runs the full test suite with coverage requirements
+   - Functions: 95% coverage required
+   - Lines/Statements/Branches: 85% coverage required
+
+The pre-commit hook will:
+
+- Format your code automatically
+- Run all tests with coverage
+- Prevent commits if tests fail or coverage drops below thresholds
+- Prevent commits if formatting changes files (you'll need to stage the formatted files)
+
+### Test Coverage
+
+The project maintains high test coverage focused on the `src/utils` directory:
+
+- **Current Coverage**: ~89% statements, ~90% branches, 100% functions
+- **Coverage Reports**: Available in `coverage/` directory after running `npm run test:coverage`
+- **Focused Testing**: Only utils directory is included in coverage reports
+
+### Code Quality
+
+- **TypeScript**: Strict type checking enabled
+- **Prettier**: Consistent code formatting
+- **Vitest**: Modern testing framework with coverage reporting
+- **ESLint**: Code linting (configured via package.json)
+
+## �📝 Contributing
 
 Contributions are welcome! Please read our contributing guidelines and submit pull requests for any improvements.
 
