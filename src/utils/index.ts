@@ -1,3 +1,3 @@
 export { syncContentfulToLocal } from "./syncContentfulToLocal";
-export { runMigrations } from "./runMigrations";
+export { syncModelsToContentful as runMigrations } from "./syncModelsToContentful";
 export type { ContentModel, CreateOrEditContentTypeFunction } from "../types";

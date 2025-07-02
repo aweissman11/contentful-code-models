@@ -7,7 +7,7 @@ import {
   PlainClientAPI,
 } from "contentful-management";
 
-export const runMigrations = async ({
+export const syncModelsToContentful = async ({
   options,
   models,
 }: {
