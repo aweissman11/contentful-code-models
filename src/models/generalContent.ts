@@ -4,7 +4,7 @@ import { stylesOnlyRichText } from "./shared/stylesOnlyRichText.js";
 
 export const generalContent: ContentModel = {
   id: "generalContent",
-  name: "General Content!",
+  name: "General Content",
   description: "Content type for general content blocks.",
   displayField: "internalTitle",
   fields: [
@@ -22,19 +22,19 @@ export const generalContent: ContentModel = {
       validations: [],
     },
     {
+      ...stylesOnlyRichText,
       id: "pretext",
       name: "Pretext",
-      ...stylesOnlyRichText,
     },
     {
+      ...stylesOnlyRichText,
       id: "title",
       name: "Title",
-      ...stylesOnlyRichText,
     },
     {
+      ...complexRichText,
       id: "body",
       name: "Body",
-      ...complexRichText,
     },
     {
       omitted: false,
@@ -93,62 +93,106 @@ export const generalContent: ContentModel = {
       validations: [],
     },
   ],
-  configureEntryEditors: [
-    {
-      widgetNamespace: "editor-builtin",
-      widgetId: "singleLine",
-      settings: {
+  editorInterface: {
+    editors: [
+      {
+        settings: {
+          fieldId: "internalTitle",
+        },
+        widgetId: "singleLine",
+        widgetNamespace: "editor-builtin",
+      },
+      {
+        settings: {
+          fieldId: "title",
+        },
+        widgetId: "richTextEditor",
+        widgetNamespace: "editor-builtin",
+      },
+      {
+        settings: {
+          fieldId: "pretext",
+        },
+        widgetId: "richTextEditor",
+        widgetNamespace: "editor-builtin",
+      },
+      {
+        settings: {
+          fieldId: "body",
+        },
+        widgetId: "richTextEditor",
+        widgetNamespace: "editor-builtin",
+      },
+      {
+        settings: {
+          fieldId: "asset",
+        },
+        widgetId: "assetLinkEditor",
+        widgetNamespace: "editor-builtin",
+      },
+      {
+        settings: {
+          fieldId: "cta",
+        },
+        widgetId: "entryLinkEditor",
+        widgetNamespace: "editor-builtin",
+      },
+      {
+        settings: {
+          fieldId: "link",
+        },
+        widgetId: "entryLinkEditor",
+        widgetNamespace: "editor-builtin",
+      },
+      {
+        settings: {
+          fieldId: "image",
+        },
+        widgetId: "assetLinkEditor",
+        widgetNamespace: "editor-builtin",
+      },
+    ],
+    controls: [
+      {
         fieldId: "internalTitle",
+        widgetId: "singleLine",
+        widgetNamespace: "builtin",
       },
-    },
-    {
-      widgetNamespace: "editor-builtin",
-      widgetId: "richTextEditor",
-      settings: {
+      {
         fieldId: "title",
+        widgetId: "richTextEditor",
+        widgetNamespace: "builtin",
       },
-    },
-    {
-      widgetNamespace: "editor-builtin",
-      widgetId: "richTextEditor",
-      settings: {
-        fieldId: "pretext",
-      },
-    },
-    {
-      widgetNamespace: "editor-builtin",
-      widgetId: "richTextEditor",
-      settings: {
+      {
         fieldId: "body",
+        widgetId: "richTextEditor",
+        widgetNamespace: "builtin",
       },
-    },
-    {
-      widgetNamespace: "editor-builtin",
-      widgetId: "assetLinkEditor",
-      settings: {
+      {
         fieldId: "asset",
+        widgetId: "assetLinkEditor",
+        widgetNamespace: "builtin",
       },
-    },
-    {
-      widgetNamespace: "editor-builtin",
-      widgetId: "entryLinkEditor",
-      settings: {
+      {
         fieldId: "cta",
+        widgetId: "entryLinkEditor",
+        widgetNamespace: "builtin",
       },
-    },
-    {
-      widgetNamespace: "editor-builtin",
-      widgetId: "entryLinkEditor",
-      settings: {
+      {
         fieldId: "link",
+        widgetId: "entryLinkEditor",
+        widgetNamespace: "builtin",
       },
-    },
-    {
-      widgetNamespace: "editor-builtin",
-      widgetId: "assetLinkEditor",
-      settings: {
+      {
         fieldId: "image",
+        widgetId: "assetLinkEditor",
+        widgetNamespace: "builtin",
       },
-    },
-  ],
+      {
+        fieldId: "pretext",
+        widgetId: "richTextEditor",
+        widgetNamespace: "builtin",
+      },
+    ],
+  },
 };

@@ -1,6 +1,7 @@
-import type { IFieldOptions } from "contentful-migration";
+import { ContentFields, KeyValueMap } from "contentful-management";
 
-export const complexRichText: IFieldOptions = {
+export const complexRichText: ContentFields<KeyValueMap> = {
+  id: "body",
   omitted: false,
   disabled: false,
   required: false,

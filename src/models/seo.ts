@@ -83,55 +83,94 @@ export const seo: ContentModel = {
       validations: [],
     },
   ],
-  configureEntryEditors: [
-    {
-      widgetNamespace: "editor-builtin",
-      widgetId: "singleLine",
-      settings: {
+  editorInterface: {
+    editors: [
+      {
+        settings: {
+          fieldId: "title",
+        },
+        widgetId: "singleLine",
+        widgetNamespace: "editor-builtin",
+      },
+      {
+        settings: {
+          fieldId: "description",
+        },
+        widgetId: "markdown",
+        widgetNamespace: "editor-builtin",
+      },
+      {
+        settings: {
+          fieldId: "ogDescription",
+        },
+        widgetId: "markdown",
+        widgetNamespace: "editor-builtin",
+      },
+      {
+        settings: {
+          fieldId: "image",
+        },
+        widgetId: "assetLinkEditor",
+        widgetNamespace: "editor-builtin",
+      },
+      {
+        settings: {
+          fieldId: "canonicalUrl",
+        },
+        widgetId: "singleLine",
+        widgetNamespace: "editor-builtin",
+      },
+      {
+        settings: {
+          fieldId: "noIndex",
+        },
+        widgetId: "boolean",
+        widgetNamespace: "editor-builtin",
+      },
+      {
+        settings: {
+          fieldId: "noFollow",
+        },
+        widgetId: "boolean",
+        widgetNamespace: "editor-builtin",
+      },
+    ],
+    controls: [
+      {
         fieldId: "title",
+        widgetId: "singleLine",
+        widgetNamespace: "builtin",
       },
-    },
-    {
-      widgetNamespace: "editor-builtin",
-      widgetId: "markdown",
-      settings: {
+      {
         fieldId: "description",
+        widgetId: "markdown",
+        widgetNamespace: "builtin",
       },
-    },
-    {
-      widgetNamespace: "editor-builtin",
-      widgetId: "markdown",
-      settings: {
+      {
         fieldId: "ogDescription",
+        widgetId: "markdown",
+        widgetNamespace: "builtin",
       },
-    },
-    {
-      widgetNamespace: "editor-builtin",
-      widgetId: "assetLinkEditor",
-      settings: {
+      {
         fieldId: "image",
+        widgetId: "assetLinkEditor",
+        widgetNamespace: "builtin",
       },
-    },
-    {
-      widgetNamespace: "editor-builtin",
-      widgetId: "singleLine",
-      settings: {
+      {
         fieldId: "canonicalUrl",
+        widgetId: "singleLine",
+        widgetNamespace: "builtin",
       },
-    },
-    {
-      widgetNamespace: "editor-builtin",
-      widgetId: "boolean",
-      settings: {
+      {
         fieldId: "noIndex",
+        widgetId: "boolean",
+        widgetNamespace: "builtin",
       },
-    },
-    {
-      widgetNamespace: "editor-builtin",
-      widgetId: "boolean",
-      settings: {
+      {
         fieldId: "noFollow",
+        widgetId: "boolean",
+        widgetNamespace: "builtin",
       },
-    },
-  ],
+    ],
+  },
 };

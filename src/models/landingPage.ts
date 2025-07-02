@@ -82,4 +82,23 @@ export const landingPage: ContentModel = {
       },
     },
   ],
+  editorInterface: {
+    controls: [
+      {
+        fieldId: "internalTitle",
+      },
+      {
+        fieldId: "slug",
+      },
+      {
+        fieldId: "modules",
+      },
+      {
+        fieldId: "title",
+      },
+      {
+        fieldId: "hero",
+      },
+    ],
+  },
 };

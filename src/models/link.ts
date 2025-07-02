@@ -42,4 +42,17 @@ export const link: ContentModel = {
       ],
     },
   ],
+  editorInterface: {
+    controls: [
+      {
+        fieldId: "internalTitle",
+      },
+      {
+        fieldId: "text",
+      },
+      {
+        fieldId: "ref",
+      },
+    ],
+  },
 };

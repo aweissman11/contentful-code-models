@@ -3,13 +3,9 @@ import fs from "fs";
 import _ from "lodash";
 import path from "path";
 import { pathToFileURL } from "url";
-import {
-  ContentField,
-  ContentModel,
-  EntryEditor,
-  SyncContentfulToLocalFunction,
-} from "../types";
+import { ContentModel, SyncContentfulToLocalFunction } from "../types";
 import { createManagementClient } from "./createManagementClient";
+import { ContentFields, KeyValueMap } from "contentful-management";
 
 export const fieldDefaults = {
   omitted: false,
@@ -27,7 +23,7 @@ export const syncContentfulToLocal: SyncContentfulToLocalFunction = async (
     accessToken: "",
     environmentId: "",
     spaceId: "",
-  },
+  }
 ): Promise<void> => {
   console.log("Running sync function...");
   const client = createManagementClient({
@@ -52,7 +48,7 @@ export const syncContentfulToLocal: SyncContentfulToLocalFunction = async (
     console.log(`Processing model: ${model.sys.id}`);
 
     const editorLayout = editorInterfaces.find(
-      (ei) => ei.sys.contentType.sys.id === model.sys.id,
+      (ei) => ei.sys.contentType.sys.id === model.sys.id
     );
 
     // get local model from the file system
@@ -60,7 +56,7 @@ export const syncContentfulToLocal: SyncContentfulToLocalFunction = async (
     try {
       const localFilePath = path.resolve(
         path.join(modelsDir),
-        `${model.sys.id}.ts`,
+        `${model.sys.id}.ts`
       );
       const localModule = await import(pathToFileURL(localFilePath).toString());
       localModel = localModule?.[model.sys.id] ?? {};
@@ -73,47 +69,14 @@ export const syncContentfulToLocal: SyncContentfulToLocalFunction = async (
       name: model.name,
       description: model.description,
       displayField: model.displayField,
-      fields: model.fields
-        .map((field) => ({
-          ...fieldDefaults,
-          id: field.id,
-          name: field.name,
-          type: field.type,
-          linkType: field.linkType,
-          allowedResources: field.allowedResources,
-          required: field.required,
-          validations: field.validations,
-          localized: field.localized,
-          disabled: field.disabled,
-          omitted: field.omitted,
-          deleted: field.deleted,
-          defaultValue: field.defaultValue,
-          items: field.items,
-        }))
-        .filter(Boolean) as ContentField[],
+      fields: model.fields,
     };
 
-    if (
-      editorLayout?.controls?.length &&
-      editorLayout.controls.some((c) => c.widgetId)
-    ) {
-      parsedModel.configureEntryEditors = editorLayout.controls
-        ?.map((c) => {
-          if (!c.widgetId) return null;
-
-          return {
-            // widgetNamespace comes back as 'builtin' when it needs to be set as 'editor-builtin'
-            widgetNamespace:
-              c.widgetNamespace === "builtin"
-                ? "editor-builtin"
-                : c.widgetNamespace,
-            widgetId: c.widgetId,
-            settings: {
-              fieldId: c.fieldId,
-            },
-          };
-        })
-        .filter(Boolean) as EntryEditor[];
+    if (editorLayout) {
+      const { sys, ...rest } = editorLayout;
+      parsedModel.editorInterface = {
+        ...rest,
+      };
     }
 
     const mergedModel = _.merge(localModel, parsedModel);
@@ -140,7 +103,7 @@ export const syncContentfulToLocal: SyncContentfulToLocalFunction = async (
   const fileContent = `import type { ContentModel } from 'contentful-code-models';\n${contentModels
     .map(({ sys }) => `import { ${sys.id} } from "./${sys.id}";`)
     .join("\n")}\n\nexport const models:ContentModel[] = [${contentModels.map(
-    ({ sys }) => sys.id,
+    ({ sys }) => sys.id
   )}];\n`;
   fs.writeFileSync(filePath, fileContent, "utf8");
 
@@ -149,7 +112,7 @@ export const syncContentfulToLocal: SyncContentfulToLocalFunction = async (
   console.log("\x1b[34m", "Sync completed successfully!");
   console.log(
     "\x1b[34m",
-    "**You should probably format and commit your code now.**",
+    "**You should probably format and commit your code now.**"
   );
   console.log("\x1b[32m", "+++++++++++++++++++++++++++++++++++++++");
   console.log("\x1b[35m", "=======================================");

@@ -46,7 +46,6 @@
   },
   "dependencies": {
     "contentful-management": "^11.53.0",
-    "contentful-migration": "^4.28.6",
     "lodash": "^4.17.21"
   },
   "devDependencies": {

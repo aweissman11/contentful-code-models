@@ -67,27 +67,14 @@ export const fiftyFifty: ContentModel = {
       ],
     },
   ],
-  configureEntryEditors: [
-    {
-      widgetNamespace: "editor-builtin",
-      widgetId: "singleLine",
-      settings: {
-        fieldId: "internalTitle",
-      },
-    },
-    {
-      widgetNamespace: "editor-builtin",
-      widgetId: "entryLinkEditor",
-      settings: {
-        fieldId: "content",
-      },
-    },
-    {
-      widgetNamespace: "editor-builtin",
-      widgetId: "dropdown",
+  editorInterface: {
+    editor: {
       settings: {
         fieldId: "heroType",
       },
+      widgetId: "dropdown",
+      widgetNamespace: "editor-builtin",
     },
-  ],
+    controls: [],
+  },
 };

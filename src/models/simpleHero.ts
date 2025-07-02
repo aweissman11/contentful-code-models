@@ -50,27 +50,46 @@ export const simpleHero: ContentModel = {
       ],
     },
   ],
-  configureEntryEditors: [
-    {
-      widgetNamespace: "editor-builtin",
-      widgetId: "singleLine",
-      settings: {
+  editorInterface: {
+    editors: [
+      {
+        settings: {
+          fieldId: "internalTitle",
+        },
+        widgetId: "singleLine",
+        widgetNamespace: "editor-builtin",
+      },
+      {
+        settings: {
+          fieldId: "content",
+        },
+        widgetId: "entryLinkEditor",
+        widgetNamespace: "editor-builtin",
+      },
+      {
+        settings: {
+          fieldId: "heroType",
+        },
+        widgetId: "dropdown",
+        widgetNamespace: "editor-builtin",
+      },
+    ],
+    controls: [
+      {
         fieldId: "internalTitle",
+        widgetId: "singleLine",
+        widgetNamespace: "builtin",
       },
-    },
-    {
-      widgetNamespace: "editor-builtin",
-      widgetId: "entryLinkEditor",
-      settings: {
+      {
         fieldId: "content",
+        widgetId: "entryLinkEditor",
+        widgetNamespace: "builtin",
       },
-    },
-    {
-      widgetNamespace: "editor-builtin",
-      widgetId: "dropdown",
-      settings: {
+      {
         fieldId: "heroType",
+        widgetId: "dropdown!!",
+        widgetNamespace: "builtin",
       },
-    },
-  ],
+    ],
+  },
 };
