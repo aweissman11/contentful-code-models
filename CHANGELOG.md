@@ -1,5 +1,11 @@
 # contentful-code-models
 
+## 2.0.0
+
+### Major Changes
+
+- 2b87e19: remove contentful migration dependency
+
 ## 1.0.7
 
 ### Patch Changes
