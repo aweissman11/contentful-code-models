@@ -196,5 +196,66 @@ export const generalContent: ContentModel = {
         widgetNamespace: "builtin",
       },
     ],
+    editorLayout: [
+      {
+        groupId: "internal",
+        name: "Internal Fields",
+        items: [
+          {
+            fieldId: "internalTitle",
+          },
+        ],
+      },
+      {
+        groupId: "content",
+        name: "Content Fields",
+        items: [
+          {
+            fieldId: "title",
+          },
+          {
+            fieldId: "body",
+          },
+          {
+            fieldId: "pretext",
+          },
+        ],
+      },
+      {
+        groupId: "media",
+        name: "Media",
+        items: [
+          {
+            fieldId: "asset",
+          },
+          {
+            fieldId: "cta",
+          },
+          {
+            fieldId: "link",
+          },
+          {
+            fieldId: "image",
+          },
+        ],
+      },
+    ],
+    groupControls: [
+      {
+        groupId: "internal",
+        widgetId: "topLevelTab",
+        widgetNamespace: "builtin",
+      },
+      {
+        groupId: "content",
+        widgetId: "topLevelTab",
+        widgetNamespace: "builtin",
+      },
+      {
+        groupId: "media",
+        widgetId: "topLevelTab",
+        widgetNamespace: "builtin",
+      },
+    ],
   },
 };

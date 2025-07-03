@@ -15,7 +15,7 @@ syncModelsToContentful({
 })
   .then((client) => {
     console.log("Migration completed successfully.");
-    console.log("Client ready for further operations:", client);
+    console.log("Client ready for further operations");
   })
   .catch((error) => {
     console.error("Migration failed:", error);
