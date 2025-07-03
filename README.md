@@ -447,58 +447,26 @@ Pushes local content models to Contentful.
 
 ### Getting Started
 
-1. Clone the repository:
+1. Install
 
 ```bash
-git clone https://github.com/aweissman11/contentful-code-models.git
-cd contentful-code-models
+npm install --save-dev contentful-code-models
 ```
 
-2. Install dependencies:
+2. Set up your environment variables by copying `.env.example` to `.env` and filling in your Contentful credentials.
 
-```bash
-npm install
+```
+CONTENTFUL_SPACE_ID=""
+CONTENTFUL_ENVIRONMENT=""
+CONTENTFUL_MANAGEMENT_TOKEN=""
 ```
 
-3. Set up your environment variables by copying `.env.example` to `.env` and filling in your Contentful credentials.
-
-### Available Scripts
-
-- `npm test` - Run the test suite
-- `npm run test:coverage` - Run tests with coverage report
-- `npm run dev` - Run tests in watch mode
-- `npm run format` - Format code with Prettier
-- `npm run check-format` - Check code formatting
-- `npm run build` - Build the package for distribution
-- `npm run precommit` - Run formatting and tests (used by pre-commit hook)
-
-### Pre-commit Hooks
-
-This project uses [Husky](https://typicode.github.io/husky/) to run pre-commit hooks that ensure code quality:
-
-1. **Code Formatting**: Automatically formats code with Prettier
-2. **Test Coverage**: Runs the full test suite with coverage requirements
-   - Functions: 95% coverage required
-   - Lines/Statements/Branches: 85% coverage required
-
-The pre-commit hook will:
-
-- Format your code automatically
-- Run all tests with coverage
-- Prevent commits if tests fail or coverage drops below thresholds
-- Prevent commits if formatting changes files (you'll need to stage the formatted files)
-
-### Test Coverage
-
-The project maintains high test coverage focused on the `src/utils` directory:
-
-- **Current Coverage**: ~89% statements, ~90% branches, 100% functions
-- **Coverage Reports**: Available in `coverage/` directory after running `npm run test:coverage`
-- **Focused Testing**: Only utils directory is included in coverage reports
+3. Set up a script runner for sync/migrate depending on you use case.
+   - See above for examples
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read our contributing guidelines and submit pull requests for any improvements.
+Contributions are welcome!
 
 ## 📄 License
 
@@ -518,56 +486,34 @@ MIT License - see LICENSE file for details.
 - [x] Editor interface management
 
 ### In Progress 🚧
-- [ ] Locale management and internationalization
-- [ ] Enhanced field validation patterns
 - [ ] CLI tools and commands
+- [ ] Locale management and internationalization
+- [ ] Integrated content migration utilities (eg plain => rich text conversion)
 
 ### High Priority Features 🚀
 - [ ] **TypeScript Type Generation**: Auto-generate TypeScript interfaces from content models
-- [ ] **Visual Diff Viewer**: Before/after comparisons for model changes
 - [ ] **Environment Management**: Multi-environment sync (dev → staging → prod)
-- [ ] **Advanced Field Deletion**: Safe field deletion with data migration
-- [ ] **Content Model Analytics**: Field usage analytics and optimization suggestions
 
 ### Developer Experience 🛠️
-- [ ] **CLI Tools**: Dedicated command-line interface (`ccm sync`, `ccm migrate`, `ccm diff`)
-- [ ] **Interactive Model Wizard**: CLI-based model creation and editing
 - [ ] **Advanced Migration Features**: Rollback capabilities and conditional migrations
 - [ ] **Model Documentation**: Auto-generated docs from content models
 - [ ] **Content Validation**: Cross-field validation and data integrity checks
 - [ ] **Plugin System**: Custom field types and validation plugins
-- [ ] **Performance Monitoring**: Migration performance metrics and optimization
-
-### Visual Tools 👁️
-- [ ] **Visual Model Editor**: GUI for content model creation and editing
-- [ ] **Schema Dependency Graph**: Visualize relationships between content types
-- [ ] **Interactive Migration Planner**: Visual migration workflow planning
-- [ ] **Content Model Changelog**: Track and visualize model changes over time
 
 ### Enterprise Features 🏢
-- [ ] **Backup & Recovery**: Automated content model backups and point-in-time recovery
-- [ ] **Access Control**: Role-based permissions for model changes
-- [ ] **Approval Workflows**: Team collaboration with review processes
-- [ ] **Audit Logging**: Complete change tracking and compliance features
 - [ ] **Multi-Space Management**: Manage multiple Contentful spaces from one interface
-- [ ] **Advanced Security**: Enhanced authentication and authorization features
 
 ### Integration & Automation 🔗
 - [ ] **Webhook Integration**: Trigger external workflows on model changes
 - [ ] **CI/CD Integration**: Enhanced GitHub Actions and deployment pipelines
 - [ ] **Third-party Integrations**: Slack notifications, Jira tickets, etc.
-- [ ] **API Extensions**: REST/GraphQL APIs for programmatic access
-- [ ] **Monitoring & Alerting**: Real-time notifications for model changes and issues
 
 ### Quality & Testing 🧪
 - [ ] **Integration Testing**: End-to-end tests with real Contentful spaces
-- [ ] **Model Linting**: Automated code quality checks for content models
 - [ ] **Performance Testing**: Load testing for large-scale migrations
 - [ ] **Content Model Validation**: Advanced validation rules and testing tools
 
 ### Future Vision 🔮
-- [ ] **AI-Powered Suggestions**: Intelligent field recommendations and optimization
-- [ ] **Content Model Templates**: Pre-built templates for common use cases
 - [ ] **Advanced Rich Text**: Custom rich text configurations and components
 - [ ] **Content Localization Tools**: Advanced locale management and translation workflows
 - [ ] **Mobile App**: Mobile interface for content model management
