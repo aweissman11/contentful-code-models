@@ -272,9 +272,9 @@ export const article: ContentModel = {
       validations: [],
     },
     {
+      ...complexRichText,
       id: "body",
       name: "Body Content",
-      ...complexRichText,
     },
   ],
 };
