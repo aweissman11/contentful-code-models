@@ -395,18 +395,6 @@ This library supports all Contentful field types with comprehensive validation o
 - **Test migrations**: Always test model changes in a development space first
 - **Document changes**: Use descriptive commit messages for model changes
 
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**TypeScript Errors**: Ensure your TypeScript configuration supports ES modules and the latest syntax features.
-
-**Authentication Errors**: Verify your management token has the correct permissions and hasn't expired.
-
-**Field Validation Errors**: Check that field validations match Contentful's validation schema exactly.
-
-**Migration Failures**: Review the migration logs and ensure your local models are valid before attempting to migrate.
-
 ## 🔧 API Reference
 
 ### `syncContentfulToLocal(options)`
@@ -446,13 +434,9 @@ Pushes local content models to Contentful.
 
 ### Common Issues
 
-**TypeScript Errors**: Ensure your TypeScript configuration supports ES modules and the latest syntax features.
-
 **Authentication Errors**: Verify your management token has the correct permissions and hasn't expired.
 
 **Field Validation Errors**: Check that field validations match Contentful's validation schema exactly.
-
-**Migration Failures**: Review the migration logs and ensure your local models are valid before attempting to migrate.
 
 ## �️ Development
 
