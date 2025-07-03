@@ -1,16 +1,16 @@
-import { link } from "./link.js";
-import { simpleHero } from "./simpleHero.js";
-import { landingPage } from "./landingPage.js";
-import { seo } from "./seo.js";
-import { generalContent } from "./generalContent.js";
-import { ContentModel } from "../types/index.js";
-import { fiftyFifty } from "./fiftyFifty.js";
+import type { ContentModel } from "../types";
+import { fiftyFifty } from "./fiftyFifty";
+import { generalContent } from "./generalContent";
+import { seo } from "./seo";
+import { landingPage } from "./landingPage";
+import { simpleHero } from "./simpleHero";
+import { link } from "./link";
 
 export const models: ContentModel[] = [
-  link,
-  simpleHero,
-  landingPage,
-  seo,
-  generalContent,
   fiftyFifty,
+  generalContent,
+  seo,
+  landingPage,
+  simpleHero,
+  link,
 ];

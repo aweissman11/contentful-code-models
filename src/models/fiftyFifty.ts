@@ -1,7 +1,9 @@
-import { ContentModel } from "../types";
+import type { ContentModel } from "../types";
 
 export const fiftyFifty: ContentModel = {
-  id: "fiftyFifty",
+  sys: {
+    id: "fiftyFifty",
+  },
   name: "Fifty Fifty",
   description:
     "Content type for a fifty fifty section with a title and subtitle.",
@@ -67,27 +69,14 @@ export const fiftyFifty: ContentModel = {
       ],
     },
   ],
-  configureEntryEditors: [
-    {
-      widgetNamespace: "editor-builtin",
-      widgetId: "singleLine",
-      settings: {
-        fieldId: "internalTitle",
-      },
-    },
-    {
-      widgetNamespace: "editor-builtin",
-      widgetId: "entryLinkEditor",
-      settings: {
-        fieldId: "content",
-      },
-    },
-    {
-      widgetNamespace: "editor-builtin",
-      widgetId: "dropdown",
+  editorInterface: {
+    editor: {
       settings: {
         fieldId: "heroType",
       },
+      widgetId: "dropdown",
+      widgetNamespace: "editor-builtin",
     },
-  ],
+    controls: [],
+  },
 };

@@ -30,3 +30,5 @@ export const createManagementClient = ({
     },
   );
 };
+
+export default createManagementClient;

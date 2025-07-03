@@ -38,15 +38,17 @@
     "check-format": "prettier --check .",
     "check-exports": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "dev": "vitest",
     "local-release": "changeset version && changeset publish",
     "prepublishOnly": "npm run ci",
-    "sync": "tsx ./src/scripts/runSync.ts",
-    "migrate": "tsx ./src/scripts/runMigrate.ts"
+    "precommit": "npm run format && npm run test:coverage",
+    "sync": "tsx ./src/scripts/runSync.ts && npm run format",
+    "migrate": "tsx ./src/scripts/runMigrate.ts",
+    "prepare": "husky"
   },
   "dependencies": {
     "contentful-management": "^11.53.0",
-    "contentful-migration": "^4.28.6",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
@@ -55,7 +57,9 @@
     "@eslint/eslintrc": "^3.3.1",
     "@types/lodash": "^4.17.17",
     "@types/node": "^24.0.3",
+    "@vitest/coverage-v8": "^3.2.4",
     "dotenv": "^16.5.0",
+    "husky": "^9.1.7",
     "prettier": "^3.5.3",
     "tsup": "^8.5.0",
     "tsx": "^4.20.3",

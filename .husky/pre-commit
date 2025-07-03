@@ -1,0 +1,17 @@
+# Run code formatting first
+echo "🎨 Running code formatter..."
+npm run format
+
+# Check if formatting changed any files
+if [ -n "$(git diff --name-only)" ]; then
+  echo "❌ Code formatting made changes. Please stage the formatted files and commit again."
+  echo "Files that were formatted:"
+  git diff --name-only
+  exit 1
+fi
+
+# Run tests with coverage
+echo "🧪 Running tests with coverage..."
+npm run test:coverage
+
+echo "✅ All pre-commit checks passed!"

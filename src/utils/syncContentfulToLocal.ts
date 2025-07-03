@@ -1,14 +1,10 @@
+import { PlainClientAPI } from "contentful-management";
 import "dotenv/config";
 import fs from "fs";
 import _ from "lodash";
 import path from "path";
 import { pathToFileURL } from "url";
-import {
-  ContentField,
-  ContentModel,
-  EntryEditor,
-  SyncContentfulToLocalFunction,
-} from "../types";
+import { ContentModel } from "../types";
 import { createManagementClient } from "./createManagementClient";
 
 export const fieldDefaults = {
@@ -22,14 +18,20 @@ export const fieldDefaults = {
   defaultValue: undefined,
 };
 
-export const syncContentfulToLocal: SyncContentfulToLocalFunction = async (
-  { modelsBasePath, accessToken, environmentId, spaceId } = {
-    accessToken: "",
-    environmentId: "",
-    spaceId: "",
-  },
-): Promise<void> => {
+export const syncContentfulToLocal = async ({
+  modelsBasePath,
+  options,
+}: {
+  modelsBasePath?: string;
+  options: {
+    accessToken: string;
+    environmentId: string;
+    spaceId: string;
+  };
+}): Promise<PlainClientAPI> => {
   console.log("Running sync function...");
+  const { accessToken, environmentId, spaceId } = options;
+
   const client = createManagementClient({
     accessToken,
     environmentId,
@@ -69,51 +71,20 @@ export const syncContentfulToLocal: SyncContentfulToLocalFunction = async (
     }
 
     const parsedModel: ContentModel = {
-      id: model.sys.id,
+      sys: {
+        id: model.sys.id,
+      },
       name: model.name,
       description: model.description,
       displayField: model.displayField,
-      fields: model.fields
-        .map((field) => ({
-          ...fieldDefaults,
-          id: field.id,
-          name: field.name,
-          type: field.type,
-          linkType: field.linkType,
-          allowedResources: field.allowedResources,
-          required: field.required,
-          validations: field.validations,
-          localized: field.localized,
-          disabled: field.disabled,
-          omitted: field.omitted,
-          deleted: field.deleted,
-          defaultValue: field.defaultValue,
-          items: field.items,
-        }))
-        .filter(Boolean) as ContentField[],
+      fields: model.fields,
     };
 
-    if (
-      editorLayout?.controls?.length &&
-      editorLayout.controls.some((c) => c.widgetId)
-    ) {
-      parsedModel.configureEntryEditors = editorLayout.controls
-        ?.map((c) => {
-          if (!c.widgetId) return null;
-
-          return {
-            // widgetNamespace comes back as 'builtin' when it needs to be set as 'editor-builtin'
-            widgetNamespace:
-              c.widgetNamespace === "builtin"
-                ? "editor-builtin"
-                : c.widgetNamespace,
-            widgetId: c.widgetId,
-            settings: {
-              fieldId: c.fieldId,
-            },
-          };
-        })
-        .filter(Boolean) as EntryEditor[];
+    if (editorLayout) {
+      const { sys, ...rest } = editorLayout;
+      parsedModel.editorInterface = {
+        ...rest,
+      };
     }
 
     const mergedModel = _.merge(localModel, parsedModel);
@@ -153,4 +124,6 @@ export const syncContentfulToLocal: SyncContentfulToLocalFunction = async (
   );
   console.log("\x1b[32m", "+++++++++++++++++++++++++++++++++++++++");
   console.log("\x1b[35m", "=======================================");
+
+  return client;
 };

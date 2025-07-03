@@ -1,7 +1,9 @@
-import { ContentModel } from "../types";
+import type { ContentModel } from "../types";
 
 export const landingPage: ContentModel = {
-  id: "landingPage",
+  sys: {
+    id: "landingPage",
+  },
   name: "Landing Page",
   description: "Content type for landing pages.",
   displayField: "internalTitle",
@@ -80,6 +82,26 @@ export const landingPage: ContentModel = {
         ],
         linkType: "Entry",
       },
+      validations: [],
     },
   ],
+  editorInterface: {
+    controls: [
+      {
+        fieldId: "internalTitle",
+      },
+      {
+        fieldId: "slug",
+      },
+      {
+        fieldId: "modules",
+      },
+      {
+        fieldId: "title",
+      },
+      {
+        fieldId: "hero",
+      },
+    ],
+  },
 };
