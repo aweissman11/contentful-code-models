@@ -1,5 +1,11 @@
 # contentful-code-models
 
+## 2.0.1
+
+### Patch Changes
+
+- 1472f16: readme
+
 ## 2.0.0
 
 ### Major Changes
