@@ -236,7 +236,7 @@ Push your local models to Contentful using the sync function:
 ```typescript
 // scripts/migrate.ts
 import "dotenv/config";
-import { syncModelsToContentful } from "contentful-code-models";
+import { migrateConfig } from "contentful-code-models";
 import { models } from "../src/models"; // Your model definitions
 
 const options = {
@@ -245,7 +245,7 @@ const options = {
   environmentId: process.env.CONTENTFUL_ENVIRONMENT!,
 };
 
-syncModelsToContentful({
+migrateConfig({
   models,
   options,
 })
@@ -259,7 +259,7 @@ syncModelsToContentful({
   });
 ```
 
-The `syncModelsToContentful` function will:
+The `migrateConfig` function will:
 
 - Create new content types that don't exist
 - Update existing content types with your local changes
@@ -474,7 +474,7 @@ Pulls content types from Contentful and generates local TypeScript model files.
 
 **Returns:** `Promise<PlainClientAPI>` - The Contentful management client instance
 
-### `syncModelsToContentful(options)`
+### `migrateConfig(options)`
 
 Pushes local content models to Contentful.
 

@@ -1,7 +1,7 @@
 import { Command } from "commander";
 import { stat } from "fs/promises";
 import path from "path";
-import { syncModelsToContentful } from "../utils/syncModelsToContentful.js";
+import { migrateConfig } from "../utils/migrateConfig.js";
 import "dotenv/config";
 
 /**
@@ -119,7 +119,7 @@ export const migrateCommand = new Command("migrate")
       // Load models from the specified directory
       const models = await loadModelsFromDirectory(options.models);
 
-      await syncModelsToContentful({
+      await migrateConfig({
         models,
         options: {
           spaceId,

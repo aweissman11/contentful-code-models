@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { PlainClientAPI } from "contentful-management";
-import { syncModelsToContentful } from "../syncModelsToContentful";
+import { migrateConfig } from "../migrateConfig";
 import { createManagementClient } from "../createManagementClient";
 import { ContentModel } from "../../types";
 import cloneDeep from "lodash/cloneDeep";
@@ -15,7 +15,7 @@ const consoleSpy = {
   error: vi.spyOn(console, "error").mockImplementation(() => {}),
 };
 
-describe("syncModelsToContentful", () => {
+describe("migrateConfig", () => {
   const mockClient: PlainClientAPI = {
     contentType: {
       getMany: vi.fn(),
@@ -137,9 +137,9 @@ describe("syncModelsToContentful", () => {
     consoleSpy.error.mockClear();
   });
 
-  describe("syncModelsToContentful", () => {
+  describe("migrateConfig", () => {
     it("should return client when no models provided", async () => {
-      const result = await syncModelsToContentful({
+      const result = await migrateConfig({
         options: mockOptions,
         models: [],
       });
@@ -150,7 +150,7 @@ describe("syncModelsToContentful", () => {
     });
 
     it("should return client when models is undefined", async () => {
-      const result = await syncModelsToContentful({
+      const result = await migrateConfig({
         options: mockOptions,
         models: undefined,
       });
@@ -165,7 +165,7 @@ describe("syncModelsToContentful", () => {
         items: [],
       });
 
-      await syncModelsToContentful({
+      await migrateConfig({
         options: mockOptions,
         models: [mockContentModel],
       });
@@ -192,7 +192,7 @@ describe("syncModelsToContentful", () => {
         displayField: null,
       };
 
-      await syncModelsToContentful({
+      await migrateConfig({
         options: mockOptions,
         models: [modelWithoutDisplayField],
       });
@@ -213,7 +213,7 @@ describe("syncModelsToContentful", () => {
         items: [mockExistingContentType],
       });
 
-      await syncModelsToContentful({
+      await migrateConfig({
         options: mockOptions,
         models: [mockContentModel],
       });
@@ -272,7 +272,7 @@ describe("syncModelsToContentful", () => {
         items: [mockExistingContentType],
       });
 
-      await syncModelsToContentful({
+      await migrateConfig({
         options: mockOptions,
         models: [modelWithoutDisplayField],
       });
@@ -304,7 +304,7 @@ describe("syncModelsToContentful", () => {
         items: [mockExistingContentType],
       });
 
-      await syncModelsToContentful({
+      await migrateConfig({
         options: mockOptions,
         models: [modelWithoutSymbolFields],
       });
@@ -338,7 +338,7 @@ describe("syncModelsToContentful", () => {
         items: [mockEditorInterface],
       });
 
-      await syncModelsToContentful({
+      await migrateConfig({
         options: mockOptions,
         models: [modelWithEditor],
       });
@@ -370,7 +370,7 @@ describe("syncModelsToContentful", () => {
         items: [mockEditorInterface],
       });
 
-      await syncModelsToContentful({
+      await migrateConfig({
         options: mockOptions,
         models: [modelWithoutEditor],
       });
@@ -386,7 +386,7 @@ describe("syncModelsToContentful", () => {
         items: [mockExistingContentType],
       });
 
-      await syncModelsToContentful({
+      await migrateConfig({
         options: mockOptions,
         models: [mockContentModel],
       });
@@ -414,7 +414,7 @@ describe("syncModelsToContentful", () => {
     });
 
     it("should display success message when all operations complete", async () => {
-      await syncModelsToContentful({
+      await migrateConfig({
         options: mockOptions,
         models: [mockContentModel],
       });
@@ -431,7 +431,7 @@ describe("syncModelsToContentful", () => {
       (mockClient.contentType.getMany as any).mockRejectedValue(error);
 
       await expect(
-        syncModelsToContentful({
+        migrateConfig({
           options: mockOptions,
           models: [mockContentModel],
         }),
@@ -450,7 +450,7 @@ describe("syncModelsToContentful", () => {
       (mockClient.contentType.createWithId as any).mockRejectedValue(error);
 
       // The function should handle the error internally and still return the client
-      const result = await syncModelsToContentful({
+      const result = await migrateConfig({
         options: mockOptions,
         models: [mockContentModel],
       });
@@ -472,7 +472,7 @@ describe("syncModelsToContentful", () => {
       (mockClient.contentType.update as any).mockRejectedValue(error);
 
       await expect(
-        syncModelsToContentful({
+        migrateConfig({
           options: mockOptions,
           models: [mockContentModel],
         }),
@@ -510,7 +510,7 @@ describe("syncModelsToContentful", () => {
           sys: { id: "secondModel", version: 1 },
         });
 
-      await syncModelsToContentful({
+      await migrateConfig({
         options: mockOptions,
         models: [mockContentModel, secondModel],
       });
@@ -545,7 +545,7 @@ describe("syncModelsToContentful", () => {
         items: [mockEditorInterface],
       });
 
-      await syncModelsToContentful({
+      await migrateConfig({
         options: mockOptions,
         models: [mockContentModel],
       });
@@ -561,7 +561,7 @@ describe("syncModelsToContentful", () => {
         environmentId: "custom-env",
       };
 
-      await syncModelsToContentful({
+      await migrateConfig({
         options: customOptions,
         models: [mockContentModel],
       });
@@ -575,7 +575,7 @@ describe("syncModelsToContentful", () => {
         fields: [],
       };
 
-      await syncModelsToContentful({
+      await migrateConfig({
         options: mockOptions,
         models: [modelWithNoFields],
       });
@@ -617,7 +617,7 @@ describe("syncModelsToContentful", () => {
         items: [existingContentTypeWithManyFields],
       });
 
-      await syncModelsToContentful({
+      await migrateConfig({
         options: mockOptions,
         models: [mockContentModel], // Only has title and content fields
       });
@@ -675,7 +675,7 @@ describe("syncModelsToContentful", () => {
         mockEditorInterface,
       );
 
-      const result = await syncModelsToContentful({
+      const result = await migrateConfig({
         options: mockOptions,
         models: [mockContentModel],
       });
@@ -734,7 +734,7 @@ describe("syncModelsToContentful", () => {
         updatedEditorInterface,
       );
 
-      await syncModelsToContentful({
+      await migrateConfig({
         options: mockOptions,
         models: [modelWithEditor],
       });
@@ -771,7 +771,7 @@ describe("syncModelsToContentful", () => {
         publishedContentType,
       );
 
-      await syncModelsToContentful({
+      await migrateConfig({
         options: mockOptions,
         models: [mockContentModel],
       });
@@ -800,7 +800,7 @@ describe("syncModelsToContentful", () => {
         new Error("Creation failed"),
       );
 
-      await syncModelsToContentful({
+      await migrateConfig({
         options: mockOptions,
         models: [mockContentModel],
       });
@@ -813,7 +813,7 @@ describe("syncModelsToContentful", () => {
       // Now simulate a rollback scenario
       (mockClient.contentType.delete as any).mockResolvedValue({});
 
-      await syncModelsToContentful({
+      await migrateConfig({
         options: mockOptions,
         models: [mockContentModel],
       });
@@ -838,7 +838,7 @@ describe("syncModelsToContentful", () => {
 
       // The function should re-throw API errors from getMany
       await expect(
-        syncModelsToContentful({
+        migrateConfig({
           options: mockOptions,
           models: [mockContentModel],
         }),
@@ -855,7 +855,7 @@ describe("syncModelsToContentful", () => {
         items: [mockEditorInterface],
       });
 
-      await syncModelsToContentful({
+      await migrateConfig({
         options: mockOptions,
         models: [modelWithoutEditor],
       });
@@ -877,7 +877,7 @@ describe("syncModelsToContentful", () => {
         items: [mockEditorInterface],
       });
 
-      await syncModelsToContentful({
+      await migrateConfig({
         options: mockOptions,
         models: [mockContentModel],
       });
