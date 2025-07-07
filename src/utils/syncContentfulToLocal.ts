@@ -1,7 +1,7 @@
 import { PlainClientAPI } from "contentful-management";
 import "dotenv/config";
 import fs from "fs";
-import _ from "lodash";
+import merge from "lodash/merge.js";
 import path from "path";
 import { pathToFileURL } from "url";
 import { ContentModel } from "../types";
@@ -87,7 +87,7 @@ export const syncContentfulToLocal = async ({
       };
     }
 
-    const mergedModel = _.merge(localModel, parsedModel);
+    const mergedModel = merge(localModel, parsedModel);
 
     // set this path from the root of the project
     const filePath = path.join(modelsDir, `${model.sys.id}.ts`);

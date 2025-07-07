@@ -1,4 +1,4 @@
-import cloneDeep from "lodash/cloneDeep";
+import cloneDeep from "lodash/cloneDeep.js";
 import { ContentModel } from "../types";
 import { createManagementClient } from "./createManagementClient";
 import {
