@@ -646,4 +646,247 @@ describe("syncModelsToContentful", () => {
       );
     });
   });
+
+  describe("Rollback functionality", () => {
+    it("should handle errors during content creation and trigger rollback", async () => {
+      // consoleSpy.log.mockRestore();
+      // consoleSpy.error.mockRestore();
+
+      // Setup a scenario where an error occurs during the update phase for an existing content type
+      (mockClient.contentType.getMany as any).mockResolvedValue({
+        items: [mockExistingContentType],
+      });
+      (mockClient.editorInterface.getMany as any).mockResolvedValue({
+        items: [mockEditorInterface],
+      });
+
+      // Make the update method fail to trigger the catch block
+      (mockClient.contentType.update as any).mockRejectedValueOnce(
+        new Error("Update failed"),
+      );
+
+      // However, we need to ensure that the rollback operations don't fail
+      // Mock the rollback operations to succeed
+      (mockClient.contentType.delete as any).mockResolvedValue({});
+      (mockClient.contentType.update as any).mockResolvedValue(
+        mockExistingContentType,
+      );
+      (mockClient.editorInterface.update as any).mockResolvedValue(
+        mockEditorInterface,
+      );
+
+      const result = await syncModelsToContentful({
+        options: mockOptions,
+        models: [mockContentModel],
+      });
+
+      // make sure client.contentType.publish was called with the original version
+      expect(mockClient.contentType.publish).toHaveBeenCalledWith(
+        expect.objectContaining({
+          accessToken: "test-token",
+          contentTypeId: "testModel",
+          environmentId: "test-env",
+          spaceId: "test-space",
+        }),
+        expect.objectContaining({
+          sys: expect.objectContaining({
+            id: "testModel",
+            version: 1,
+          }),
+        }),
+      );
+
+      // The function should handle the error and still return the client
+      expect(result).toBe(mockClient);
+      // Since the function catches and handles the error internally, we should see error logs
+      expect(consoleSpy.error).toHaveBeenCalled();
+    });
+
+    it("should update original editor interface sys after successful editor update", async () => {
+      const modelWithEditor = {
+        ...mockContentModel,
+        editorInterface: {
+          controls: [
+            {
+              fieldId: "title",
+              widgetId: "multiLine",
+            },
+          ],
+          sidebar: [],
+        },
+      };
+
+      const originalEditorInterface = {
+        ...mockEditorInterface,
+      };
+
+      (mockClient.contentType.getMany as any).mockResolvedValue({
+        items: [mockExistingContentType],
+      });
+      (mockClient.editorInterface.getMany as any).mockResolvedValue({
+        items: [originalEditorInterface],
+      });
+
+      const updatedEditorInterface = {
+        sys: { id: "editor-interface-id", version: 2 },
+      };
+      (mockClient.editorInterface.update as any).mockResolvedValue(
+        updatedEditorInterface,
+      );
+
+      await syncModelsToContentful({
+        options: mockOptions,
+        models: [modelWithEditor],
+      });
+
+      expect(mockClient.editorInterface.update).toHaveBeenCalledWith(
+        {
+          ...mockOptions,
+          contentTypeId: "testModel",
+        },
+        {
+          ...originalEditorInterface,
+          ...modelWithEditor.editorInterface,
+        },
+      );
+    });
+
+    it("should update original content type sys after successful publish", async () => {
+      const originalContentType = {
+        ...mockExistingContentType,
+        sys: { ...mockExistingContentType.sys, version: 1 },
+      };
+
+      (mockClient.contentType.getMany as any).mockResolvedValue({
+        items: [originalContentType],
+      });
+      (mockClient.editorInterface.getMany as any).mockResolvedValue({
+        items: [],
+      });
+
+      const publishedContentType = {
+        sys: { id: "testModel", version: 3 },
+      };
+      (mockClient.contentType.publish as any).mockResolvedValue(
+        publishedContentType,
+      );
+
+      await syncModelsToContentful({
+        options: mockOptions,
+        models: [mockContentModel],
+      });
+
+      expect(mockClient.contentType.publish).toHaveBeenCalledWith(
+        {
+          ...mockOptions,
+          contentTypeId: "testModel",
+        },
+        {
+          ...originalContentType,
+          sys: {
+            ...originalContentType.sys,
+            version: originalContentType.sys.version + 1,
+          },
+        },
+      );
+    });
+
+    it("should delete content type if it was created", async () => {
+      (mockClient.contentType.getMany as any).mockResolvedValue({
+        items: [],
+      });
+
+      (mockClient.contentType.createWithId as any).mockRejectedValue(
+        new Error("Creation failed"),
+      );
+
+      await syncModelsToContentful({
+        options: mockOptions,
+        models: [mockContentModel],
+      });
+
+      expect(mockClient.contentType.createWithId).toHaveBeenCalledWith(
+        { contentTypeId: "testModel" },
+        expect.any(Object),
+      );
+
+      // Now simulate a rollback scenario
+      (mockClient.contentType.delete as any).mockResolvedValue({});
+
+      await syncModelsToContentful({
+        options: mockOptions,
+        models: [mockContentModel],
+      });
+
+      expect(mockClient.contentType.delete).toHaveBeenCalledWith({
+        contentTypeId: "testModel",
+      });
+      expect(consoleSpy.log).toHaveBeenCalledWith(
+        "Deleted content type",
+        "testModel",
+        "🗑️",
+      );
+    });
+  });
+
+  describe("Error handling edge cases", () => {
+    it("should handle errors and log them properly", async () => {
+      // Set up a simple error scenario
+      (mockClient.contentType.getMany as any).mockRejectedValue(
+        new Error("API Error"),
+      );
+
+      // The function should re-throw API errors from getMany
+      await expect(
+        syncModelsToContentful({
+          options: mockOptions,
+          models: [mockContentModel],
+        }),
+      ).rejects.toThrow("API Error");
+    });
+
+    it("should handle scenario where editor interface exists but model doesn't have one", async () => {
+      const modelWithoutEditor = mockContentModel;
+
+      (mockClient.contentType.getMany as any).mockResolvedValue({
+        items: [mockExistingContentType],
+      });
+      (mockClient.editorInterface.getMany as any).mockResolvedValue({
+        items: [mockEditorInterface],
+      });
+
+      await syncModelsToContentful({
+        options: mockOptions,
+        models: [modelWithoutEditor],
+      });
+
+      expect(mockClient.editorInterface.update).not.toHaveBeenCalled();
+      expect(consoleSpy.log).toHaveBeenCalledWith(
+        "no editor interface for",
+        "testModel",
+      );
+    });
+  });
+
+  describe("Complex scenarios", () => {
+    it("should handle scenario with no existing content types but existing editor interfaces", async () => {
+      (mockClient.contentType.getMany as any).mockResolvedValue({
+        items: [],
+      });
+      (mockClient.editorInterface.getMany as any).mockResolvedValue({
+        items: [mockEditorInterface],
+      });
+
+      await syncModelsToContentful({
+        options: mockOptions,
+        models: [mockContentModel],
+      });
+
+      expect(mockClient.contentType.createWithId).toHaveBeenCalled();
+      expect(consoleSpy.log).toHaveBeenCalledWith(
+        "no editor interface for",
+        "testModel",
+      );
+    });
+  });
 });
