@@ -1,5 +1,5 @@
 import { models } from "../models";
-import { syncModelsToContentful } from "../utils";
+import { migrateConfig } from "../utils";
 
 import "dotenv/config";
 
@@ -9,7 +9,7 @@ const options = {
   environmentId: process.env.CONTENTFUL_ENVIRONMENT!,
 };
 
-syncModelsToContentful({
+migrateConfig({
   models,
   options,
 })

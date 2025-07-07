@@ -17,7 +17,7 @@ export const createManagementClient = ({
     );
   }
 
-  return contentfulManagement.createClient(
+  client = contentfulManagement.createClient(
     {
       accessToken,
     },
@@ -29,6 +29,8 @@ export const createManagementClient = ({
       },
     },
   );
+
+  return client;
 };
 
 export default createManagementClient;

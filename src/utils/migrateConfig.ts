@@ -1,4 +1,4 @@
-import cloneDeep from "lodash/cloneDeep";
+import cloneDeep from "lodash/cloneDeep.js";
 import { ContentModel } from "../types";
 import { createManagementClient } from "./createManagementClient";
 import {
@@ -7,7 +7,7 @@ import {
   PlainClientAPI,
 } from "contentful-management";
 
-export const syncModelsToContentful = async ({
+export const migrateConfig = async ({
   options,
   models,
 }: {
@@ -46,6 +46,7 @@ export const syncModelsToContentful = async ({
           (m) => m.sys.id === model.sys.id,
         );
         if (!existingContentType) {
+          createdContentTypes.push(model.sys.id);
           const createdModel = await client.contentType.createWithId(
             {
               contentTypeId: model.sys.id,
@@ -58,7 +59,6 @@ export const syncModelsToContentful = async ({
             },
           );
 
-          createdContentTypes.push(createdModel.sys.id);
           console.log("created model", createdModel.sys.id, "✅");
         } else {
           const fields = [
@@ -156,13 +156,14 @@ export const syncModelsToContentful = async ({
     } catch (error) {
       console.error("\n\n\n\x1b[31m", error, "\n\n\n");
 
+      console.log("Rolling back all changes 🛞⬅️");
       for (const model of models) {
         if (createdContentTypes.includes(model.sys.id)) {
           // delete the content type
           await client.contentType.delete({
             contentTypeId: model.sys.id,
           });
-          console.log("deleted content type", model.sys.id, "🗑️");
+          console.log("Deleted content type", model.sys.id, "🗑️");
         } else {
           const originalEditorInterface =
             originalEditorInterfaces[model.sys.id];
@@ -177,7 +178,7 @@ export const syncModelsToContentful = async ({
               },
             );
             console.log(
-              "rolled back editor interface for",
+              "Rolled back editor interface for",
               model.sys.id,
               "🛞⬅️",
             );
@@ -212,7 +213,7 @@ export const syncModelsToContentful = async ({
                 },
               },
             );
-            console.log("rolled back content type for", model.sys.id, "🛞⬅️");
+            console.log("Rolled back content type for", model.sys.id, "🛞⬅️");
           }
         }
       }

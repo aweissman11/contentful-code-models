@@ -19,7 +19,71 @@ A TypeScript library for managing Contentful content types and models through co
 npm install --save-dev contentful-code-models
 ```
 
-## 📖 Usage
+## 🖥️ CLI Tools
+
+This package includes CLI tools for easy command-line usage via the `ccm` command:
+
+### Installation
+
+After installing the package, you can use the CLI tools:
+
+```bash
+# Using npx (recommended)
+npx ccm --help
+
+# Or if installed globally
+npm install -g contentful-code-models
+ccm --help
+```
+
+### CLI Commands
+
+#### Sync FROM Contentful (Pull Models)
+
+```bash
+# Sync models from Contentful to local files
+npx ccm sync --output ./src/models
+
+# With environment variables in .env file
+npx ccm sync
+
+# With command line options
+npx ccm sync \
+  --space-id your_space_id \
+  --access-token your_token \
+  --environment master \
+  --output ./src/models
+```
+
+#### Migrate TO Contentful (Push Models)
+
+```bash
+# Migrate local models to Contentful
+npx ccm migrate --models ./src/models
+
+# With environment variables in .env file
+npx ccm migrate
+
+# With command line options
+npx ccm migrate \
+  --space-id your_space_id \
+  --access-token your_token \
+  --environment master \
+  --models ./src/models
+```
+
+### Environment Variables
+
+Create a `.env` file in your project root:
+
+```bash
+# Required for all CLI operations
+CONTENTFUL_SPACE_ID=your_space_id
+CONTENTFUL_MANAGEMENT_TOKEN=your_management_token
+CONTENTFUL_ENVIRONMENT=master
+```
+
+## 📖 Programmatic Usage
 
 ### 1. Syncing FROM Contentful (Pull Existing Models)
 
@@ -172,7 +236,7 @@ Push your local models to Contentful using the sync function:
 ```typescript
 // scripts/migrate.ts
 import "dotenv/config";
-import { syncModelsToContentful } from "contentful-code-models";
+import { migrateConfig } from "contentful-code-models";
 import { models } from "../src/models"; // Your model definitions
 
 const options = {
@@ -181,7 +245,7 @@ const options = {
   environmentId: process.env.CONTENTFUL_ENVIRONMENT!,
 };
 
-syncModelsToContentful({
+migrateConfig({
   models,
   options,
 })
@@ -195,7 +259,7 @@ syncModelsToContentful({
   });
 ```
 
-The `syncModelsToContentful` function will:
+The `migrateConfig` function will:
 
 - Create new content types that don't exist
 - Update existing content types with your local changes
@@ -410,7 +474,7 @@ Pulls content types from Contentful and generates local TypeScript model files.
 
 **Returns:** `Promise<PlainClientAPI>` - The Contentful management client instance
 
-### `syncModelsToContentful(options)`
+### `migrateConfig(options)`
 
 Pushes local content models to Contentful.
 
@@ -484,9 +548,9 @@ MIT License - see LICENSE file for details.
 - [x] Pre-commit hooks with code formatting and test coverage
 - [x] Bi-directional sync (Contentful ↔ Local)
 - [x] Editor interface management
+- [x] CLI tools and commands (`contentful-code-models sync`, `contentful-code-models migrate`)
 
 ### In Progress 🚧
-- [ ] CLI tools and commands
 - [ ] Locale management and internationalization
 - [ ] Integrated content migration utilities (eg plain => rich text conversion)
 
@@ -495,10 +559,12 @@ MIT License - see LICENSE file for details.
 - [ ] **Environment Management**: Multi-environment sync (dev → staging → prod)
 
 ### Developer Experience 🛠️
+- [ ] **Interactive Model Wizard**: CLI-based model creation and editing
 - [ ] **Advanced Migration Features**: Rollback capabilities and conditional migrations
 - [ ] **Model Documentation**: Auto-generated docs from content models
 - [ ] **Content Validation**: Cross-field validation and data integrity checks
 - [ ] **Plugin System**: Custom field types and validation plugins
+- [ ] **Performance Monitoring**: Migration performance metrics and optimization
 
 ### Enterprise Features 🏢
 - [ ] **Multi-Space Management**: Manage multiple Contentful spaces from one interface

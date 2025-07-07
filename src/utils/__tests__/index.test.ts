@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import * as utilsIndex from "../index";
 import { syncContentfulToLocal } from "../syncContentfulToLocal";
-import { syncModelsToContentful } from "../syncModelsToContentful";
+import { migrateConfig } from "../migrateConfig";
 import { ContentModel, CreateOrEditContentTypeFunction } from "../../types";
 
 describe("Utils Index", () => {
@@ -10,24 +10,24 @@ describe("Utils Index", () => {
     expect(typeof utilsIndex.syncContentfulToLocal).toBe("function");
   });
 
-  it("should export syncModelsToContentful function", () => {
-    expect(utilsIndex.syncModelsToContentful).toBe(syncModelsToContentful);
-    expect(typeof utilsIndex.syncModelsToContentful).toBe("function");
+  it("should export migrateConfig function", () => {
+    expect(utilsIndex.migrateConfig).toBe(migrateConfig);
+    expect(typeof utilsIndex.migrateConfig).toBe("function");
   });
 
   it("should export all expected functions and types", () => {
     expect(utilsIndex).toHaveProperty("syncContentfulToLocal");
-    expect(utilsIndex).toHaveProperty("syncModelsToContentful");
+    expect(utilsIndex).toHaveProperty("migrateConfig");
 
     // Verify the functions are actually functions
     expect(typeof utilsIndex.syncContentfulToLocal).toBe("function");
-    expect(typeof utilsIndex.syncModelsToContentful).toBe("function");
+    expect(typeof utilsIndex.migrateConfig).toBe("function");
   });
 
   it("should have the correct number of exports", () => {
     const exports = Object.keys(utilsIndex);
     expect(exports).toHaveLength(2);
     expect(exports).toContain("syncContentfulToLocal");
-    expect(exports).toContain("syncModelsToContentful");
+    expect(exports).toContain("migrateConfig");
   });
 });
