@@ -1,5 +1,11 @@
 # contentful-code-models
 
+## 3.0.0
+
+### Major Changes
+
+- 78245a1: cli and function name
+
 ## 2.0.1
 
 ### Patch Changes
