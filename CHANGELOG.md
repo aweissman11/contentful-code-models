@@ -1,5 +1,11 @@
 # contentful-code-models
 
+## 2.1.0
+
+### Minor Changes
+
+- 483585b: locales support
+
 ## 2.0.1
 
 ### Patch Changes
