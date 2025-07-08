@@ -1,4 +1,4 @@
-import { syncContentfulToLocal } from "../utils/syncContentfulToLocal.js";
+import { syncToLocal } from "../utils/syncToLocal.js";
 
 const options = {
   spaceId: process.env.CONTENTFUL_SPACE_ID!,
@@ -6,7 +6,7 @@ const options = {
   environmentId: process.env.CONTENTFUL_ENVIRONMENT!,
 };
 
-syncContentfulToLocal({
+syncToLocal({
   modelsBasePath: "./src/models",
   options,
 })
