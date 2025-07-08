@@ -3,12 +3,16 @@ import { stat } from "fs/promises";
 import path from "path";
 import { migrateConfig } from "../utils/migrateConfig.js";
 import "dotenv/config";
+import { ContentModel } from "../types/index.js";
+import { CreateLocaleProps } from "contentful-management/dist/typings/entities/locale.js";
 
 /**
  * Loads models from a directory, looking for either index.js or index.ts
  * Prefers index.js if both exist, falls back to index.ts if only that exists
  */
-async function loadModelsFromDirectory(modelsPath: string): Promise<any[]> {
+async function loadModelsFromDirectory(
+  modelsPath: string,
+): Promise<{ models?: ContentModel[]; locales?: CreateLocaleProps[] }> {
   try {
     const resolvedPath = path.resolve(process.cwd(), modelsPath);
 
@@ -16,14 +20,13 @@ async function loadModelsFromDirectory(modelsPath: string): Promise<any[]> {
 
     // Try to find index file (prefer .js, fallback to .ts)
     let indexPath: string;
-    let foundFile = false;
+    let isTypeScript = false;
 
     // First try index.js
     const indexJsPath = path.join(resolvedPath, "index.js");
     try {
       await stat(indexJsPath);
       indexPath = indexJsPath;
-      foundFile = true;
       console.log(`📄 Using index.js`);
     } catch {
       // Try index.ts
@@ -31,7 +34,7 @@ async function loadModelsFromDirectory(modelsPath: string): Promise<any[]> {
       try {
         await stat(indexTsPath);
         indexPath = indexTsPath;
-        foundFile = true;
+        isTypeScript = true;
         console.log(`📄 Using index.ts`);
       } catch {
         // Neither found
@@ -46,8 +49,92 @@ async function loadModelsFromDirectory(modelsPath: string): Promise<any[]> {
     }
 
     // Import the models
-    const modelsModule = await import(indexPath!);
+    let modelsModule;
+    if (isTypeScript) {
+      // For TypeScript files, we need to handle them specially
+      try {
+        // Use tsx to run the TypeScript file and extract the models
+        console.log("📝 Loading TypeScript file with tsx...");
+        const { spawn } = await import("child_process");
+        const { writeFile, unlink } = await import("fs/promises");
+        const { tmpdir } = await import("os");
+
+        // Create a temporary script to extract models
+        const tempScriptPath = path.join(
+          tmpdir(),
+          `extract-models-${Date.now()}.js`,
+        );
+        const extractScript = `
+          import { models, locales } from "${indexPath}";
+          process.stdout.write(JSON.stringify({ models, locales }, null, 2));
+        `;
+
+        await writeFile(tempScriptPath, extractScript);
+
+        // Run tsx to execute the script
+        const result = await new Promise<string>((resolve, reject) => {
+          const child = spawn("npx", ["tsx", tempScriptPath], {
+            stdio: ["pipe", "pipe", "pipe"],
+            cwd: process.cwd(),
+          });
+
+          let stdout = "";
+          let stderr = "";
+
+          child.stdout.on("data", (data) => {
+            stdout += data.toString();
+          });
+
+          child.stderr.on("data", (data) => {
+            stderr += data.toString();
+          });
+
+          child.on("close", (code) => {
+            if (code === 0) {
+              resolve(stdout);
+            } else {
+              reject(
+                new Error(
+                  `tsx execution failed with code ${code}. stderr: ${stderr}`,
+                ),
+              );
+            }
+          });
+
+          child.on("error", reject);
+        });
+
+        // Clean up temp file
+        await unlink(tempScriptPath).catch(() => {}); // Ignore cleanup errors
+
+        // Parse the JSON output
+        try {
+          modelsModule = JSON.parse(result.trim());
+        } catch (parseError) {
+          console.error(
+            "❌ Error: Failed to parse models output from TypeScript file.",
+          );
+          console.error("Raw output:", result);
+          throw parseError;
+        }
+      } catch (tsxError) {
+        console.error(
+          "❌ Error: Failed to load TypeScript file. Make sure tsx is available for loading .ts files.",
+        );
+        console.log(
+          "💡 Tip: Either build your project first or ensure tsx is properly installed.",
+        );
+        console.log(
+          "💡 Alternative: Convert your index.ts to index.js or build your models first.",
+        );
+        throw tsxError;
+      }
+    } else {
+      modelsModule = await import(indexPath!);
+    }
+
     const models = modelsModule.models || modelsModule.default;
+    const locales = modelsModule.locales;
 
     if (!Array.isArray(models)) {
       console.error(
@@ -60,7 +147,7 @@ async function loadModelsFromDirectory(modelsPath: string): Promise<any[]> {
     }
 
     console.log(`📋 Found ${models.length} model(s) to migrate`);
-    return models;
+    return { models, locales };
   } catch (error) {
     console.error(`❌ Error loading models from ${modelsPath}:`, error);
     process.exit(1);
@@ -117,10 +204,11 @@ export const migrateCommand = new Command("migrate")
       console.log("");
 
       // Load models from the specified directory
-      const models = await loadModelsFromDirectory(options.models);
+      const { models, locales } = await loadModelsFromDirectory(options.models);
 
       await migrateConfig({
         models,
+        locales,
         options: {
           spaceId,
           accessToken,
@@ -129,7 +217,7 @@ export const migrateCommand = new Command("migrate")
       });
 
       console.log("\n✅ Migration completed successfully!");
-      console.log(`🎉 ${models.length} model(s) synced to Contentful`);
+      console.log(`🎉 ${models?.length} model(s) synced to Contentful`);
     } catch (error) {
       console.error("\n❌ Migration failed:\n", error);
       process.exit(1);

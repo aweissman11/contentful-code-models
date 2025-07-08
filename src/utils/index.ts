@@ -1,3 +1,3 @@
-export { syncContentfulToLocal } from "./syncContentfulToLocal";
+export { syncToLocal } from "./syncToLocal";
 export { migrateConfig } from "./migrateConfig";
-export type { ContentModel, CreateOrEditContentTypeFunction } from "../types";
+export type { ContentModel } from "../types";

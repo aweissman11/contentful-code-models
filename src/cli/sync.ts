@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { syncContentfulToLocal } from "../utils/syncContentfulToLocal.js";
+import { syncToLocal } from "../utils/syncToLocal.js";
 import path from "path";
 import "dotenv/config";
 
@@ -55,7 +55,7 @@ export const syncCommand = new Command("sync")
       console.log(`   Output: ${outputPath}`);
       console.log("");
 
-      await syncContentfulToLocal({
+      await syncToLocal({
         modelsBasePath: outputPath,
         options: {
           spaceId,

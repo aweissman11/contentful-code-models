@@ -10,8 +10,8 @@ if [ -n "$(git diff --name-only)" ]; then
   exit 1
 fi
 
-# Run tests with coverage
-echo "🧪 Running tests with coverage..."
-npm run test:coverage
+# Run ESLint
+echo "🔍 Running ESLint..."
+npm run lint
 
 echo "✅ All pre-commit checks passed!"

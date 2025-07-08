@@ -92,7 +92,7 @@ Use this when you have existing content types in Contentful and want to manage t
 ```typescript
 // scripts/sync.ts
 import "dotenv/config";
-import { syncContentfulToLocal } from "contentful-code-models";
+import { syncToLocal } from "contentful-code-models";
 
 const options = {
   spaceId: process.env.CONTENTFUL_SPACE_ID!,
@@ -100,7 +100,7 @@ const options = {
   environmentId: process.env.CONTENTFUL_ENVIRONMENT!,
 };
 
-syncContentfulToLocal({
+syncToLocal({
   modelsBasePath: "./src/models", // Optional param where to save model files
   options,
 })
@@ -444,6 +444,60 @@ This library supports all Contentful field types with comprehensive validation o
 - **Shared field definitions**: Create reusable field configurations in a `shared/` directory
 - **Consistent naming**: Use consistent field naming across content types
 
+## 🛠️ Development
+
+### Setting Up the Development Environment
+
+1. **Clone the repository**
+2. **Install dependencies**: `npm install`
+3. **Build the project**: `npm run build`
+
+### Code Quality Tools
+
+This project uses several tools to maintain code quality:
+
+#### ESLint
+
+- **Configuration**: Uses `eslint.config.js` with TypeScript support
+- **Run linting**: `npm run lint`
+- **Auto-fix issues**: `npm run lint:fix`
+- **Pre-commit**: ESLint runs automatically on commit via husky hooks
+
+#### Prettier
+
+- **Formatting**: `npm run format`
+- **Check formatting**: `npm run check-format`
+- **Pre-commit**: Code formatting is enforced via husky hooks
+
+#### Pre-commit Hooks
+
+The project uses husky to run quality checks before commits:
+
+1. **Code formatting** (Prettier)
+2. **Linting** (ESLint)
+
+### Development Scripts
+
+```bash
+# Development
+npm run dev          # Run tests in watch mode
+npm run build        # Build the project
+npm run ci           # Run full CI pipeline (build + lint + format check)
+
+# Code Quality
+npm run lint         # Run ESLint
+npm run lint:fix     # Fix ESLint issues automatically
+npm run format       # Format code with Prettier
+npm run check-format # Check if code is properly formatted
+
+# Testing
+npm run test         # Run tests
+npm run test:coverage # Run tests with coverage
+
+# CLI Testing
+npm run cli:test     # Test CLI functionality
+```
+
 ### Development Workflow
 
 1. **Start with sync**: Pull existing models from Contentful using `npm run content:sync`
@@ -461,7 +515,7 @@ This library supports all Contentful field types with comprehensive validation o
 
 ## 🔧 API Reference
 
-### `syncContentfulToLocal(options)`
+### `syncToLocal(options)`
 
 Pulls content types from Contentful and generates local TypeScript model files.
 
@@ -549,9 +603,9 @@ MIT License - see LICENSE file for details.
 - [x] Bi-directional sync (Contentful ↔ Local)
 - [x] Editor interface management
 - [x] CLI tools and commands (`contentful-code-models sync`, `contentful-code-models migrate`)
+- [x] Locale management and internationalization
 
 ### In Progress 🚧
-- [ ] Locale management and internationalization
 - [ ] Integrated content migration utilities (eg plain => rich text conversion)
 
 ### High Priority Features 🚀
