@@ -78,7 +78,7 @@ export const migrateModels = async ({
             {
               ...existingContentType,
               name: model.name,
-              description: model.description,
+              description: model.description ?? "",
               displayField:
                 model.displayField ??
                 model.fields.find((f) => f.type === "Symbol")?.id ??
