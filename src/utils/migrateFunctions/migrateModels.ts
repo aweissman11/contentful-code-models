@@ -20,45 +20,61 @@ export const migrateModels = async ({
   models?: ContentModel[];
 }): Promise<void> => {
   if (models?.length) {
-    const contentModels = await client.contentType.getMany({});
-    const editorInterfaces = await client.editorInterface.getMany({});
-
-    const originalContentTypes = contentModels.items.reduce<{
-      [key: string]: ContentTypeProps;
-    }>((acc, model) => {
-      acc[model.sys.id] = cloneDeep(model);
-      return acc;
-    }, {});
-
-    const createdContentTypes: string[] = [];
-
-    const originalEditorInterfaces = editorInterfaces.items.reduce<
-      Record<string, EditorInterfaceProps>
-    >((acc, model) => {
-      acc[model.sys.contentType.sys.id] = cloneDeep(model);
-      return acc;
-    }, {});
+    let originalContentTypes: Record<string, ContentTypeProps> = {};
+    let originalEditorInterfaces: Record<string, EditorInterfaceProps> = {};
+    let createdContentTypes: string[] = [];
 
     try {
+      let contentModels = await client.contentType.getMany({});
+      const editorInterfaces = await client.editorInterface.getMany({});
+
+      originalContentTypes = contentModels.items.reduce<{
+        [key: string]: ContentTypeProps;
+      }>((acc, model) => {
+        acc[model.sys.id] = cloneDeep(model);
+        return acc;
+      }, {});
+
+      originalEditorInterfaces = editorInterfaces.items.reduce<
+        Record<string, EditorInterfaceProps>
+      >((acc, model) => {
+        acc[model.sys.contentType.sys.id] = cloneDeep(model);
+        return acc;
+      }, {});
+
+      // create all models that exist in the local list but not in the space. Do not include their fields.
+      const modelsToCreate = models.filter((model) => {
+        return !contentModels.items.find((m) => m.sys.id === model.sys.id);
+      });
+
+      for (const model of modelsToCreate) {
+        createdContentTypes.push(model.sys.id);
+        const createdModel = await client.contentType.createWithId(
+          {
+            contentTypeId: model.sys.id,
+          },
+          {
+            name: model.name,
+            description: model.description,
+            fields: [],
+          },
+        );
+
+        console.log("created model", createdModel.sys.id, "✅");
+      }
+
+      // Now update all models that exist in the space, including those created above
+      contentModels = await client.contentType.getMany({});
+
       for (const model of models) {
         const existingContentType = contentModels.items.find(
           (m) => m.sys.id === model.sys.id,
         );
         if (!existingContentType) {
-          createdContentTypes.push(model.sys.id);
-          const createdModel = await client.contentType.createWithId(
-            {
-              contentTypeId: model.sys.id,
-            },
-            {
-              name: model.name,
-              description: model.description,
-              displayField: model.displayField ?? undefined,
-              fields: model.fields,
-            },
+          // This should never happen because we create all models that don't exist above
+          throw new Error(
+            `Something went wrong. Model ${model.sys.id} does not exist in the space and was not created as part of the initial pass.`,
           );
-
-          console.log("created model", createdModel.sys.id, "✅");
         } else {
           const fields = [
             ...model.fields,

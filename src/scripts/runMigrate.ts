@@ -1,13 +1,8 @@
 import { models, locales } from "../models";
 import { migrateConfig } from "../utils";
+import { options } from "./options";
 
 import "dotenv/config";
-
-const options = {
-  spaceId: process.env.CONTENTFUL_SPACE_ID!,
-  accessToken: process.env.CONTENTFUL_MANAGEMENT_TOKEN!,
-  environmentId: process.env.CONTENTFUL_ENVIRONMENT!,
-};
 
 migrateConfig({
   models,
