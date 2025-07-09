@@ -185,6 +185,7 @@ export const migrateModels = async ({
       console.log("Rolling back all changes 🛞⬅️");
       for (const model of models) {
         if (createdContentTypes.includes(model.sys.id)) {
+          // TODO: Not this
           // delete the content type
           await client.contentType.delete({
             contentTypeId: model.sys.id,
