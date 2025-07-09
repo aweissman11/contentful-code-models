@@ -1,5 +1,11 @@
 # contentful-code-models
 
+## 2.1.2
+
+### Patch Changes
+
+- 14a1ac9: migrate bug fix and tests
+
 ## 2.1.1
 
 ### Patch Changes
