@@ -95,9 +95,6 @@ export const landingPage: ContentModel = {
         fieldId: "modules",
       },
       {
-        fieldId: "title",
-      },
-      {
         fieldId: "hero",
       },
     ],
