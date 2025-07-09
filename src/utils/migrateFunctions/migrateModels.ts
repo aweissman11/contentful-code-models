@@ -43,12 +43,17 @@ export const migrateModels = async ({
       }, {});
 
       // create all models that exist in the local list but not in the space. Do not include their fields.
-      const modelsToCreate = models.filter((model) => {
+      const modelsToCreate = models?.filter((model) => {
         return !contentModels.items.find((m) => m.sys.id === model.sys.id);
       });
 
       for (const model of modelsToCreate) {
         createdContentTypes.push(model.sys.id);
+        const simpleField = model.fields.find(
+          (f) =>
+            (f.type === "Symbol" && f.name === model.displayField) ||
+            f.type === "Symbol",
+        );
         const createdModel = await client.contentType.createWithId(
           {
             contentTypeId: model.sys.id,
@@ -56,7 +61,8 @@ export const migrateModels = async ({
           {
             name: model.name,
             description: model.description,
-            fields: [],
+            displayField: simpleField?.name ?? undefined,
+            fields: simpleField ? [simpleField] : [],
           },
         );
 
@@ -78,7 +84,7 @@ export const migrateModels = async ({
         } else {
           const fields = [
             ...model.fields,
-            ...existingContentType.fields
+            ...(existingContentType.fields ?? [])
               .filter((f) => !model.fields.find((mf) => mf.id === f.id))
               .map((f) => ({
                 ...f,
@@ -137,29 +143,34 @@ export const migrateModels = async ({
         }
       }
 
-      for (const model of contentModels.items) {
-        const publishedModel = await client.contentType.publish(
-          {
-            ...options,
-            contentTypeId: model.sys.id,
-          },
-          {
-            ...model,
-            sys: {
-              ...model.sys,
-              version: model.sys.version + 1,
+      for (const model of models) {
+        const existingContentType = contentModels.items.find(
+          (m) => m.sys.id === model.sys.id,
+        );
+        if (existingContentType) {
+          const publishedModel = await client.contentType.publish(
+            {
+              ...options,
+              contentTypeId: model.sys.id,
             },
-          },
-        );
-        console.log(
-          "published model",
-          publishedModel.sys.id,
-          "version:",
-          publishedModel.sys.version,
-          "📤",
-        );
-        if (originalContentTypes[model.sys.id]) {
-          originalContentTypes[model.sys.id].sys = publishedModel.sys;
+            {
+              ...existingContentType,
+              sys: {
+                ...existingContentType.sys,
+                version: existingContentType.sys.version + 1,
+              },
+            },
+          );
+          console.log(
+            "published model",
+            publishedModel.sys.id,
+            "version:",
+            publishedModel.sys.version,
+            "📤",
+          );
+          if (originalContentTypes[model.sys.id]) {
+            originalContentTypes[model.sys.id].sys = publishedModel.sys;
+          }
         }
       }
 

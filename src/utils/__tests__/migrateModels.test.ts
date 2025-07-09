@@ -176,8 +176,8 @@ describe("migrateModels", () => {
       {
         name: "Test Model",
         description: "A test model",
-        displayField: "title",
-        fields: mockContentModel.fields,
+        displayField: "Title",
+        fields: [mockContentModel.fields[0]],
       },
     );
     expect(consoleSpy.log).toHaveBeenCalledWith(
@@ -187,10 +187,10 @@ describe("migrateModels", () => {
     );
   });
 
-  it("should create content type with undefined displayField when not provided", async () => {
+  it("should create content type with a default displayField when not provided", async () => {
     const modelWithoutDisplayField = {
       ...mockContentModel,
-      displayField: null,
+      displayField: undefined,
     };
 
     await migrateModels({
@@ -204,8 +204,8 @@ describe("migrateModels", () => {
       {
         name: "Test Model",
         description: "A test model",
-        displayField: undefined,
-        fields: mockContentModel.fields,
+        displayField: "Title",
+        fields: [mockContentModel.fields[0]],
       },
     );
   });
@@ -252,7 +252,7 @@ describe("migrateModels", () => {
   it("should set displayField to first Symbol field when not provided in model", async () => {
     const modelWithoutDisplayField = {
       ...mockContentModel,
-      displayField: null,
+      displayField: undefined,
       fields: [
         {
           id: "number",
@@ -292,7 +292,7 @@ describe("migrateModels", () => {
   it("should set displayField to empty string when no Symbol fields exist", async () => {
     const modelWithoutSymbolFields = {
       ...mockContentModel,
-      displayField: null,
+      displayField: undefined,
       fields: [
         {
           id: "number",
@@ -422,6 +422,15 @@ describe("migrateModels", () => {
   });
 
   it("should display success message when all operations complete", async () => {
+    // Mock the sequence: first call returns empty, second call returns the created model
+    (mockClient.contentType.getMany as any)
+      .mockResolvedValueOnce({
+        items: [],
+      })
+      .mockResolvedValueOnce({
+        items: [{ sys: { id: "testModel", version: 1 }, name: "Test Model" }],
+      });
+
     await migrateModels({
       client: mockClient,
       options: mockOptions,
@@ -641,5 +650,64 @@ describe("migrateModels", () => {
         "🗑️",
       );
     });
+  });
+
+  it("should create content type with empty fields when no Symbol fields exist", async () => {
+    const modelWithoutSymbolFields = {
+      ...mockContentModel,
+      fields: [
+        {
+          id: "number",
+          name: "Number",
+          type: "Number",
+          required: false,
+          localized: false,
+        },
+      ],
+    };
+
+    (mockClient.contentType.getMany as any).mockResolvedValue({
+      items: [],
+    });
+
+    await migrateModels({
+      client: mockClient,
+      options: mockOptions,
+      models: [modelWithoutSymbolFields],
+    });
+
+    expect(mockClient.contentType.createWithId).toHaveBeenCalledWith(
+      { contentTypeId: "testModel" },
+      {
+        name: "Test Model",
+        description: "A test model",
+        displayField: undefined,
+        fields: [], // Empty fields when no Symbol field is found
+      },
+    );
+  });
+
+  it("should handle undefined description when updating content type", async () => {
+    const modelWithoutDescription = {
+      ...mockContentModel,
+      description: undefined,
+    };
+
+    (mockClient.contentType.getMany as any).mockResolvedValue({
+      items: [mockExistingContentType],
+    });
+
+    await migrateModels({
+      client: mockClient,
+      options: mockOptions,
+      models: [modelWithoutDescription],
+    });
+
+    expect(mockClient.contentType.update).toHaveBeenCalledWith(
+      expect.any(Object),
+      expect.objectContaining({
+        description: "", // Should default to empty string when undefined
+      }),
+    );
   });
 });
