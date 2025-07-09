@@ -70,13 +70,39 @@ export const fiftyFifty: ContentModel = {
     },
   ],
   editorInterface: {
-    editor: {
-      settings: {
-        fieldId: "heroType",
+    controls: [
+      {
+        fieldId: "internalTitle",
+        widgetId: "singleLine",
+        widgetNamespace: "builtin",
       },
-      widgetId: "dropdown",
-      widgetNamespace: "editor-builtin",
-    },
-    controls: [],
+      {
+        fieldId: "content",
+        widgetId: "entryLinkEditor",
+        widgetNamespace: "builtin",
+      },
+      {
+        fieldId: "orientation",
+        widgetId: "dropdown",
+        widgetNamespace: "builtin",
+      },
+      {
+        fieldId: "mobileOrientation",
+        widgetId: "dropdown",
+        widgetNamespace: "builtin",
+      },
+    ],
+    editors: [
+      {
+        settings: {},
+        widgetId: "tags-editor",
+        widgetNamespace: "editor-builtin",
+      },
+      {
+        disabled: true,
+        widgetId: "default-editor",
+        widgetNamespace: "editor-builtin",
+      },
+    ],
   },
 };

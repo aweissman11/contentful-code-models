@@ -21,6 +21,7 @@ export const locales: CreateLocaleProps[] = [
     code: "en-US",
     name: "English (USA)",
     default: true,
+    fallbackCode: null,
   },
   {
     code: "es-US",

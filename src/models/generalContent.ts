@@ -59,21 +59,6 @@ export const generalContent: ContentModel = {
       required: false,
       localized: false,
       linkType: "Entry",
-      id: "cta",
-      name: "Call to Action",
-      type: "Link",
-      validations: [
-        {
-          linkContentType: ["callToAction"],
-        },
-      ],
-    },
-    {
-      omitted: false,
-      disabled: false,
-      required: false,
-      localized: false,
-      linkType: "Entry",
       id: "link",
       name: "Link",
       type: "Link",
@@ -82,17 +67,6 @@ export const generalContent: ContentModel = {
           linkContentType: ["link"],
         },
       ],
-    },
-    {
-      omitted: true,
-      disabled: true,
-      required: false,
-      localized: false,
-      linkType: "Asset",
-      id: "image",
-      name: "Image",
-      type: "Link",
-      validations: [],
     },
   ],
   editorInterface: {
@@ -134,23 +108,9 @@ export const generalContent: ContentModel = {
       },
       {
         settings: {
-          fieldId: "cta",
-        },
-        widgetId: "entryLinkEditor",
-        widgetNamespace: "editor-builtin",
-      },
-      {
-        settings: {
           fieldId: "link",
         },
         widgetId: "entryLinkEditor",
-        widgetNamespace: "editor-builtin",
-      },
-      {
-        settings: {
-          fieldId: "image",
-        },
-        widgetId: "assetLinkEditor",
         widgetNamespace: "editor-builtin",
       },
     ],
@@ -176,18 +136,8 @@ export const generalContent: ContentModel = {
         widgetNamespace: "builtin",
       },
       {
-        fieldId: "cta",
-        widgetId: "entryLinkEditor",
-        widgetNamespace: "builtin",
-      },
-      {
         fieldId: "link",
         widgetId: "entryLinkEditor",
-        widgetNamespace: "builtin",
-      },
-      {
-        fieldId: "image",
-        widgetId: "assetLinkEditor",
         widgetNamespace: "builtin",
       },
       {
@@ -229,13 +179,7 @@ export const generalContent: ContentModel = {
             fieldId: "asset",
           },
           {
-            fieldId: "cta",
-          },
-          {
             fieldId: "link",
-          },
-          {
-            fieldId: "image",
           },
         ],
       },
