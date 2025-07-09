@@ -1,5 +1,11 @@
 # contentful-code-models
 
+## 2.1.1
+
+### Patch Changes
+
+- 4d60565: enable initialization of content model
+
 ## 2.1.0
 
 ### Minor Changes
