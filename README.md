@@ -21,7 +21,7 @@ npm install --save-dev contentful-code-models
 
 ## 🖥️ CLI Tools
 
-This package includes CLI tools for easy command-line usage via the `ccm` command:
+This package includes CLI tools for easy command-line usage via the `contentful-code-models` command:
 
 ### Installation
 
@@ -29,11 +29,11 @@ After installing the package, you can use the CLI tools:
 
 ```bash
 # Using npx (recommended)
-npx ccm --help
+npx contentful-code-models --help
 
 # Or if installed globally
 npm install -g contentful-code-models
-ccm --help
+contentful-code-models --help
 ```
 
 ### CLI Commands
@@ -42,13 +42,13 @@ ccm --help
 
 ```bash
 # Sync models from Contentful to local files
-npx ccm sync --output ./src/models
+npx contentful-code-models sync --output ./src/models
 
 # With environment variables in .env file
-npx ccm sync
+npx contentful-code-models sync
 
 # With command line options
-npx ccm sync \
+npx contentful-code-models sync \
   --space-id your_space_id \
   --access-token your_token \
   --environment master \
@@ -59,13 +59,13 @@ npx ccm sync \
 
 ```bash
 # Migrate local models to Contentful
-npx ccm migrate --models ./src/models
+npx contentful-code-models migrate --models ./src/models
 
 # With environment variables in .env file
-npx ccm migrate
+npx contentful-code-models migrate
 
 # With command line options
-npx ccm migrate \
+npx contentful-code-models migrate \
   --space-id your_space_id \
   --access-token your_token \
   --environment master \

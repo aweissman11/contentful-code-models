@@ -16,7 +16,7 @@ const pkg = JSON.parse(
 const program = new Command();
 
 program
-  .name("ccm")
+  .name("contentful-code-models")
   .description("CLI tools for managing Contentful content models through code")
   .version(pkg.version);
 
