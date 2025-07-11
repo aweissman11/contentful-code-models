@@ -49,11 +49,6 @@ export const migrateModels = async ({
 
       for (const model of modelsToCreate) {
         createdContentTypes.push(model.sys.id);
-        const simpleField = model.fields.find(
-          (f) =>
-            (f.type === "Symbol" && f.id === model.displayField) ||
-            f.type === "Symbol",
-        );
         const createdModel = await client.contentType.createWithId(
           {
             contentTypeId: model.sys.id,
@@ -61,8 +56,8 @@ export const migrateModels = async ({
           {
             name: model.name,
             description: model.description,
-            displayField: simpleField?.id ?? undefined,
-            fields: simpleField ? [simpleField] : [],
+            displayField: undefined,
+            fields: [],
           },
         );
 

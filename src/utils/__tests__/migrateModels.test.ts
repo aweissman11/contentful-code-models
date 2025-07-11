@@ -176,8 +176,8 @@ describe("migrateModels", () => {
       {
         name: "Test Model",
         description: "A test model",
-        displayField: "Title",
-        fields: [mockContentModel.fields[0]],
+        displayField: undefined,
+        fields: [],
       },
     );
     expect(consoleSpy.log).toHaveBeenCalledWith(
@@ -204,8 +204,8 @@ describe("migrateModels", () => {
       {
         name: "Test Model",
         description: "A test model",
-        displayField: "Title",
-        fields: [mockContentModel.fields[0]],
+        displayField: undefined,
+        fields: [],
       },
     );
   });

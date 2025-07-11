@@ -1,5 +1,11 @@
 # contentful-code-models
 
+## 2.1.5
+
+### Patch Changes
+
+- bug fix
+
 ## 2.1.2
 
 ### Patch Changes
