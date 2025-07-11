@@ -1,5 +1,11 @@
 # contentful-code-models
 
+## 2.1.6
+
+### Patch Changes
+
+- a0b21e0: cli command name
+
 ## 2.1.5
 
 ### Patch Changes
