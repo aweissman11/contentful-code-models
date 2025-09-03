@@ -1,5 +1,11 @@
 # contentful-code-models
 
+## 2.1.7
+
+### Patch Changes
+
+- d272314: field editor bug fix
+
 ## 2.1.6
 
 ### Patch Changes
