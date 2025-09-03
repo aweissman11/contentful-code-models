@@ -97,6 +97,9 @@ export const landingPage: ContentModel = {
       {
         fieldId: "hero",
       },
+      {
+        fieldId: "seo",
+      },
     ],
   },
 };

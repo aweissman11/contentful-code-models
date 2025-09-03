@@ -4,6 +4,7 @@ import {
   PlainClientAPI,
 } from "contentful-management";
 import cloneDeep from "lodash/cloneDeep.js";
+import merge from "lodash/merge.js";
 import { ContentModel } from "../../types";
 
 export const migrateModels = async ({
@@ -114,30 +115,6 @@ export const migrateModels = async ({
         }
       }
 
-      for (const editor of editorInterfaces.items) {
-        const model = models.find(
-          (m) => m.sys.id === editor.sys.contentType.sys.id,
-        );
-        if (model && model.editorInterface) {
-          const updatedEditor = await client.editorInterface.update(
-            {
-              ...options,
-              contentTypeId: model.sys.id,
-            },
-            {
-              ...editor,
-              ...model.editorInterface,
-            },
-          );
-          console.log("updated editor interface for", model.sys.id, "📋");
-          if (originalEditorInterfaces[model.sys.id]) {
-            originalEditorInterfaces[model.sys.id].sys = updatedEditor.sys;
-          }
-        } else {
-          console.log("no editor interface for", editor.sys.contentType.sys.id);
-        }
-      }
-
       for (const model of models) {
         const existingContentType = contentModels.items.find(
           (m) => m.sys.id === model.sys.id,
@@ -165,6 +142,32 @@ export const migrateModels = async ({
           );
           if (originalContentTypes[model.sys.id]) {
             originalContentTypes[model.sys.id].sys = publishedModel.sys;
+          }
+
+          const editor = editorInterfaces.items.find(
+            (e) => e.sys.contentType.sys.id === model.sys.id,
+          );
+          if (editor && model && model.editorInterface) {
+            const mergedEditor = merge({}, editor, model.editorInterface);
+            const updatedEditor = await client.editorInterface.update(
+              {
+                ...options,
+                contentTypeId: model.sys.id,
+              },
+              {
+                ...mergedEditor,
+                sys: {
+                  ...mergedEditor.sys,
+                  version: mergedEditor.sys.version + 1,
+                },
+              },
+            );
+            console.log("updated editor interface for", model.sys.id, "📋");
+            if (originalEditorInterfaces[model.sys.id]) {
+              originalEditorInterfaces[model.sys.id].sys = updatedEditor.sys;
+            }
+          } else {
+            console.log("no editor interface for", model.sys.id);
           }
         }
       }

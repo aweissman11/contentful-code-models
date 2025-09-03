@@ -68,6 +68,21 @@ export const fiftyFifty: ContentModel = {
         },
       ],
     },
+    {
+      omitted: false,
+      disabled: false,
+      required: true,
+      localized: false,
+      linkType: "Entry",
+      id: "ref",
+      name: "Reference",
+      type: "Link",
+      validations: [
+        {
+          linkContentType: ["landingPage"],
+        },
+      ],
+    },
   ],
   editorInterface: {
     controls: [
@@ -89,6 +104,11 @@ export const fiftyFifty: ContentModel = {
       {
         fieldId: "mobileOrientation",
         widgetId: "dropdown",
+        widgetNamespace: "builtin",
+      },
+      {
+        fieldId: "ref",
+        widgetId: "entryLinkEditor",
         widgetNamespace: "builtin",
       },
     ],
