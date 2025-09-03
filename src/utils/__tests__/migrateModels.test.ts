@@ -349,14 +349,22 @@ describe("migrateModels", () => {
       models: [modelWithEditor],
     });
 
+    const mergedMockEditorInterface = {
+      ...mockEditorInterface,
+      ...modelWithEditor.editorInterface,
+    };
+
     expect(mockClient.editorInterface.update).toHaveBeenCalledWith(
       {
         ...mockOptions,
         contentTypeId: "testModel",
       },
       {
-        ...mockEditorInterface,
-        ...modelWithEditor.editorInterface,
+        ...mergedMockEditorInterface,
+        sys: {
+          ...mergedMockEditorInterface.sys,
+          version: mergedMockEditorInterface.sys.version + 1,
+        },
       },
     );
     expect(consoleSpy.log).toHaveBeenCalledWith(
