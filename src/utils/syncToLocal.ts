@@ -4,17 +4,14 @@ import path from "path";
 import { createManagementClient } from "./createManagementClient";
 import { syncModels } from "./syncFunctions/syncModels";
 import { createModelsIndexFile } from "./syncFunctions/createModelsIndexFile";
+import { ContentfulClientOptions } from "../types/ClientOptions";
 
 export const syncToLocal = async ({
   modelsBasePath,
   options,
 }: {
   modelsBasePath?: string;
-  options: {
-    accessToken: string;
-    environmentId: string;
-    spaceId: string;
-  };
+  options: ContentfulClientOptions;
 }): Promise<PlainClientAPI> => {
   console.log("Running sync function...");
 

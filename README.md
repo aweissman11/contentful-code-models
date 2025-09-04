@@ -72,6 +72,30 @@ npx contentful-code-models migrate \
   --models ./src/models
 ```
 
+#### Trial Run (Test Changes Without Applying)
+
+```bash
+# Perform a trial migration by creating a temporary environment
+npx contentful-code-models trial
+
+# Test against a specific base environment
+npx contentful-code-models trial --environment production
+
+# With command line options
+npx contentful-code-models trial \
+  --space-id your_space_id \
+  --access-token your_token \
+  --environment production \
+  --models ./src/models
+```
+
+The trial command will:
+
+- ✅ Create a new temporary environment based on your specified environment
+- ✅ Run a real migration against the temporary environment
+- ✅ Provide a detailed report of the migration results
+- ✅ Leave the temporary environment for you to inspect (manual cleanup required)
+
 ### Environment Variables
 
 Create a `.env` file in your project root:
@@ -266,6 +290,42 @@ The `migrateConfig` function will:
 - Preserve existing fields by omitting them instead of deleting
 - Update editor interface configurations
 - Handle field reordering and validation updates
+
+### 3. Trial Run (Test Migration in Isolated Environment)
+
+Use this to test your migration operations in a safe, isolated environment:
+
+```typescript
+// scripts/trial.ts
+import "dotenv/config";
+import { trialMigration } from "contentful-code-models";
+
+const options = {
+  spaceId: process.env.CONTENTFUL_SPACE_ID!,
+  accessToken: process.env.CONTENTFUL_MANAGEMENT_TOKEN!,
+  environmentId: process.env.CONTENTFUL_ENVIRONMENT!,
+};
+
+trialMigration({
+  options,
+  modelsPath: "./src/models", // Path to local models directory
+})
+  .then((report) => {
+    console.log("Trial completed successfully:");
+    console.log(report);
+  })
+  .catch((error) => {
+    console.error("Trial failed:", error);
+    process.exit(1);
+  });
+```
+
+The `trialMigration` function will:
+
+- Create a new temporary environment based on your specified environment
+- Run a real migration against the temporary environment
+- Provide a detailed report of the migration results
+- Leave the temporary environment for you to inspect (manual cleanup required)
 
 ### 4. Advanced Model Composition
 
@@ -541,6 +601,19 @@ Pushes local content models to Contentful.
 
 **Returns:** `Promise<PlainClientAPI>` - The Contentful management client instance
 
+### `trialMigration(options)`
+
+Creates a temporary environment and performs a real migration to test changes safely.
+
+**Parameters:**
+
+- `options.accessToken: string` - Contentful Management API token
+- `options.spaceId: string` - Contentful space ID
+- `options.environmentId: string` - Base environment ID to copy from
+- `modelsPath: string` - Path to local models directory (relative to current directory)
+
+**Returns:** `Promise<string>` - A detailed trial report containing migration results and cleanup instructions
+
 ## 🚨 Important Notes
 
 - **Sync vs Migration**: Syncing pulls FROM Contentful and overwrites local files. Migration pushes TO Contentful and may overwrite remote content types.
@@ -602,7 +675,7 @@ MIT License - see LICENSE file for details.
 - [x] Pre-commit hooks with code formatting and test coverage
 - [x] Bi-directional sync (Contentful ↔ Local)
 - [x] Editor interface management
-- [x] CLI tools and commands (`contentful-code-models sync`, `contentful-code-models migrate`)
+- [x] CLI tools and commands (`contentful-code-models sync`, `contentful-code-models migrate`, `contentful-code-models trial`)
 - [x] Locale management and internationalization
 
 ### In Progress 🚧

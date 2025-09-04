@@ -1,14 +1,10 @@
 import { Command } from "commander";
-import { migrateConfig } from "../utils/migrateConfig.js";
-import { loadModels } from "../utils/loadModels.js";
 import "dotenv/config";
+import { trialMigration } from "../utils";
 
-export const migrateCommand = new Command("migrate")
-  .description("Migrate content models TO Contentful from local files")
-  .option(
-    "-m, --models <path>",
-    "Path to models directory (relative to current directory)",
-    "./src/models",
+export const trialCommand = new Command("trial")
+  .description(
+    "Create a trial environment and run a real migration to test changes safely",
   )
   .option(
     "-s, --space-id <spaceId>",
@@ -20,8 +16,13 @@ export const migrateCommand = new Command("migrate")
   )
   .option(
     "-e, --environment <environment>",
-    "Contentful environment (or set CONTENTFUL_ENVIRONMENT env var)",
+    "Contentful environment to trial against (or set CONTENTFUL_ENVIRONMENT env var)",
     "master",
+  )
+  .option(
+    "-m, --models <path>",
+    "Path to models directory (relative to current directory)",
+    "./src/models",
   )
   .action(async (options) => {
     try {
@@ -46,31 +47,26 @@ export const migrateCommand = new Command("migrate")
         process.exit(1);
       }
 
-      console.log(`🚀 Migrating content models to Contentful...`);
+      console.log(`🧪 Starting trial run...`);
       console.log(`   Space: ${spaceId}`);
       console.log(`   Environment: ${environmentId}`);
-      console.log(`   Models path: ${options.models}`);
+      console.log(`   Models Path: ${options.models}`);
       console.log("");
 
-      // Load models from the specified directory
-      const { models, locales } = await loadModels({
-        modelsPath: options.models,
-      });
-
-      await migrateConfig({
-        models,
-        locales,
+      const result = await trialMigration({
         options: {
           spaceId,
           accessToken,
           environmentId,
         },
+        modelsPath: options.models,
       });
 
-      console.log("\n✅ Migration completed successfully!");
-      console.log(`🎉 ${models?.length} model(s) synced to Contentful`);
+      console.log("");
+      console.log("✅ Trial run completed successfully!");
+      console.log(result);
     } catch (error) {
-      console.error("\n❌ Migration failed:\n", error);
+      console.error("❌ Trial run failed:", error);
       process.exit(1);
     }
   });
