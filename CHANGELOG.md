@@ -1,5 +1,11 @@
 # contentful-code-models
 
+## 2.2.0
+
+### Minor Changes
+
+- 0465dd2: Add trial run functionality
+
 ## 2.1.7
 
 ### Patch Changes
