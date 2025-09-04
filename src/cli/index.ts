@@ -6,6 +6,7 @@ import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { syncCommand } from "./sync.js";
 import { migrateCommand } from "./migrate.js";
+import { trialCommand } from "./trial.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -22,5 +23,6 @@ program
 
 program.addCommand(syncCommand);
 program.addCommand(migrateCommand);
+program.addCommand(trialCommand);
 
 program.parse();

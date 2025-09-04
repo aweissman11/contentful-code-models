@@ -6,6 +6,7 @@ import {
 import cloneDeep from "lodash/cloneDeep.js";
 import merge from "lodash/merge.js";
 import { ContentModel } from "../../types";
+import { ContentfulClientOptions } from "../../types/ClientOptions";
 
 export const migrateModels = async ({
   client,
@@ -13,11 +14,7 @@ export const migrateModels = async ({
   models,
 }: {
   client: PlainClientAPI;
-  options: {
-    accessToken: string;
-    spaceId: string;
-    environmentId: string;
-  };
+  options: ContentfulClientOptions;
   models?: ContentModel[];
 }): Promise<void> => {
   if (models?.length) {
@@ -177,14 +174,13 @@ export const migrateModels = async ({
       console.log("\x1b[34m", "All models successfully migrated! 🎉");
       console.log("\x1b[32m", "+++++++++++++++++++++++++++++++++++++++");
       console.log("\x1b[35m", "=======================================");
+      console.log("\x1b[0m");
     } catch (error) {
       console.error("\n\n\n\x1b[31m", error, "\n\n\n");
 
       console.log("Rolling back all changes 🛞⬅️");
       for (const model of models) {
         if (createdContentTypes.includes(model.sys.id)) {
-          // TODO: Not this
-          // delete the content type
           await client.contentType.delete({
             contentTypeId: model.sys.id,
           });

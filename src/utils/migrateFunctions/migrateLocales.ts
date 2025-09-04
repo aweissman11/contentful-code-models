@@ -7,6 +7,7 @@ import {
 import cloneDeep from "lodash/cloneDeep.js";
 import isEqual from "lodash/isEqual.js";
 import merge from "lodash/merge.js";
+import { ContentfulClientOptions } from "../../types/ClientOptions";
 
 export const handleLocales = async ({
   client,
@@ -14,11 +15,7 @@ export const handleLocales = async ({
   locales,
 }: {
   client: PlainClientAPI;
-  options: {
-    accessToken: string;
-    spaceId: string;
-    environmentId: string;
-  };
+  options: ContentfulClientOptions;
   locales?: CreateLocaleProps[];
 }): Promise<void> => {
   const newLocaleIds = [];

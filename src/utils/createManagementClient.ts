@@ -1,4 +1,5 @@
 import contentfulManagement, { PlainClientAPI } from "contentful-management";
+import { ContentfulClientOptions } from "../types/ClientOptions";
 
 let client: PlainClientAPI | undefined;
 
@@ -6,11 +7,7 @@ export const createManagementClient = ({
   accessToken,
   environmentId,
   spaceId,
-}: {
-  accessToken: string;
-  environmentId: string;
-  spaceId: string;
-}): PlainClientAPI => {
+}: ContentfulClientOptions): PlainClientAPI => {
   if (!accessToken || !environmentId || !spaceId) {
     throw new Error(
       "Access token, environment ID, and space ID are required to create the Contentful management client.",

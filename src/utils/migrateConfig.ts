@@ -3,17 +3,14 @@ import { ContentModel } from "../types";
 import { createManagementClient } from "./createManagementClient";
 import { migrateModels } from "./migrateFunctions/migrateModels";
 import { handleLocales } from "./migrateFunctions/migrateLocales";
+import { ContentfulClientOptions } from "../types/ClientOptions";
 
 export const migrateConfig = async ({
   options,
   models,
   locales,
 }: {
-  options: {
-    accessToken: string;
-    spaceId: string;
-    environmentId: string;
-  };
+  options: ContentfulClientOptions;
   models?: ContentModel[];
   locales?: CreateLocaleProps[];
 }): Promise<PlainClientAPI> => {
