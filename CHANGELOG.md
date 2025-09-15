@@ -1,5 +1,11 @@
 # contentful-code-models
 
+## 2.2.1
+
+### Patch Changes
+
+- 5a40fc5: Readme update
+
 ## 2.2.0
 
 ### Minor Changes
