@@ -1,5 +1,11 @@
 # contentful-code-models
 
+## 2.2.2
+
+### Patch Changes
+
+- c6ca3d4: Allow path or models for scripts
+
 ## 2.2.1
 
 ### Patch Changes
