@@ -28,32 +28,61 @@ describe("trialMigration", () => {
     },
   } as any;
 
+  const mockModels = [
+    {
+      sys: { id: "model1" },
+      name: "Model 1",
+      fields: [
+        {
+          id: "title",
+          name: "Title",
+          type: "Symbol",
+          required: true,
+          localized: false,
+          omitted: false,
+          disabled: false,
+          validations: [],
+        },
+      ],
+    },
+    {
+      sys: { id: "model2" },
+      name: "Model 2",
+      fields: [
+        {
+          id: "content",
+          name: "Content",
+          type: "Text",
+          required: false,
+          localized: false,
+          omitted: false,
+          disabled: false,
+          validations: [],
+        },
+      ],
+    },
+  ];
+
+  const mockLocales = [{ code: "en-US" }];
+
   const mockOptions = {
     options: {
       accessToken: "test-token",
       spaceId: "test-space",
       environmentId: "test-environment",
     },
-    modelsPath: "/test/models",
+    models: mockModels,
+    locales: mockLocales,
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
     (createManagementClient as any).mockReturnValue(mockClient);
     (migrateConfig as any).mockResolvedValue({});
-
-    // Mock loadModels to return test data
     (loadModels as any).mockResolvedValue({
-      models: [
-        { sys: { id: "model1" }, name: "Model 1" },
-        { sys: { id: "model2" }, name: "Model 2" },
-      ],
-      locales: [{ code: "en-US" }],
-      fileInfo: [
-        { file: "model1.ts", path: "/test/models/model1.ts" },
-        { file: "model2.ts", path: "/test/models/model2.ts" },
-      ],
-      count: 2,
+      models: mockModels,
+      locales: mockLocales,
+      count: mockModels.length,
     });
   });
 
@@ -77,17 +106,14 @@ describe("trialMigration", () => {
 
     const result = await trialMigration(mockOptions);
 
-    // Verify loadModels was called with correct options
-    expect(loadModels).toHaveBeenCalledWith({ modelsPath: "/test/models" });
-
-    // Verify migrateConfig was called with the loaded models
+    // Verify migrateConfig was called with the provided models
     expect(migrateConfig).toHaveBeenCalledWith(
       expect.objectContaining({
-        models: [
-          { sys: { id: "model1" }, name: "Model 1" },
-          { sys: { id: "model2" }, name: "Model 2" },
-        ],
-        locales: [{ code: "en-US" }],
+        models: mockModels,
+        locales: mockLocales,
+        options: expect.objectContaining({
+          environmentId: "test-trial-env",
+        }),
       }),
     );
 
@@ -174,6 +200,12 @@ describe("trialMigration", () => {
   });
 
   it("should handle missing local models gracefully", async () => {
+    // Create a test case with empty models
+    const emptyMockOptions = {
+      ...mockOptions,
+      models: [],
+    };
+
     mockClient.environment.create.mockResolvedValue({
       sys: { id: "test-trial-env" },
     });
@@ -186,17 +218,9 @@ describe("trialMigration", () => {
       items: [],
     });
 
-    // Mock empty models for this test
-    (loadModels as any).mockResolvedValue({
-      models: [],
-      locales: [],
-      fileInfo: [],
-      count: 0,
-    });
+    const result = await trialMigration(emptyMockOptions);
 
-    const result = await trialMigration(mockOptions);
-
-    expect(result).toContain("Local Models: 0 files processed");
+    expect(result).toContain("Local Models: 0");
     expect(result).toContain("Migration completed successfully");
   });
 
@@ -246,5 +270,52 @@ describe("trialMigration", () => {
 
     expect(result).toContain("Migration completed successfully");
     expect(result).toContain("Content Types Created: 1");
+  });
+
+  it("should successfully run trial migration with modelsPath", async () => {
+    // Mock environment creation and readiness
+    mockClient.environment.create.mockResolvedValue({
+      sys: { id: "test-trial-env" },
+    });
+
+    mockClient.environment.get.mockResolvedValue({
+      sys: { status: { sys: { id: "ready" } } },
+    });
+
+    // Mock content types after migration
+    mockClient.contentType.getMany.mockResolvedValue({
+      items: [
+        { sys: { id: "model1" }, name: "Model 1" },
+        { sys: { id: "model2" }, name: "Model 2" },
+      ],
+    });
+
+    const mockOptionsWithPath = {
+      options: {
+        accessToken: "test-token",
+        spaceId: "test-space",
+        environmentId: "test-environment",
+      },
+      modelsPath: "./src/models",
+    };
+
+    const result = await trialMigration(mockOptionsWithPath);
+
+    // Verify loadModels was called with correct path
+    expect(loadModels).toHaveBeenCalledWith({ modelsPath: "./src/models" });
+
+    // Verify migrateConfig was called with loaded models
+    expect(migrateConfig).toHaveBeenCalledWith(
+      expect.objectContaining({
+        models: mockModels,
+        locales: mockLocales,
+        options: expect.objectContaining({
+          environmentId: "test-trial-env",
+        }),
+      }),
+    );
+
+    expect(result).toContain("Migration completed successfully");
+    expect(result).toContain("Local Models: 2 files processed");
   });
 });

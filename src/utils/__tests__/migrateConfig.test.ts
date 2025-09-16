@@ -3,12 +3,14 @@ import { migrateConfig } from "../migrateConfig";
 import { createManagementClient } from "../createManagementClient";
 import { handleLocales } from "../migrateFunctions/migrateLocales";
 import { migrateModels } from "../migrateFunctions/migrateModels";
+import { loadModels } from "../loadModels";
 import { ContentModel } from "../../types";
 
 // Mock dependencies
 vi.mock("../createManagementClient");
 vi.mock("../migrateFunctions/migrateLocales");
 vi.mock("../migrateFunctions/migrateModels");
+vi.mock("../loadModels");
 
 describe("migrateConfig (orchestration)", () => {
   const mockClient = { test: "mockClient" };
@@ -51,10 +53,15 @@ describe("migrateConfig (orchestration)", () => {
     (createManagementClient as any).mockReturnValue(mockClient);
     (handleLocales as any).mockResolvedValue(undefined);
     (migrateModels as any).mockResolvedValue(undefined);
+    (loadModels as any).mockResolvedValue({
+      models: mockModels,
+      locales: mockLocales,
+      count: mockModels.length,
+    });
   });
 
   it("should create management client with provided options", async () => {
-    await migrateConfig({ options: mockOptions });
+    await migrateConfig({ options: mockOptions, models: mockModels });
 
     expect(createManagementClient).toHaveBeenCalledWith(mockOptions);
   });
@@ -97,8 +104,15 @@ describe("migrateConfig (orchestration)", () => {
     });
   });
 
-  it("should pass undefined models when not provided", async () => {
-    await migrateConfig({ options: mockOptions, locales: mockLocales });
+  it("should pass undefined models when modelsPath loads no models", async () => {
+    // Mock loadModels to return no models
+    (loadModels as any).mockResolvedValueOnce({
+      models: undefined,
+      locales: mockLocales,
+      count: 0,
+    });
+
+    await migrateConfig({ options: mockOptions, modelsPath: "./empty/models" });
 
     expect(migrateModels).toHaveBeenCalledWith({
       client: mockClient,
@@ -108,7 +122,10 @@ describe("migrateConfig (orchestration)", () => {
   });
 
   it("should return the created client", async () => {
-    const result = await migrateConfig({ options: mockOptions });
+    const result = await migrateConfig({
+      options: mockOptions,
+      models: mockModels,
+    });
 
     expect(result).toBe(mockClient);
   });
@@ -151,6 +168,7 @@ describe("migrateConfig (orchestration)", () => {
     await expect(
       migrateConfig({
         options: mockOptions,
+        models: mockModels,
         locales: mockLocales,
       }),
     ).rejects.toThrow("Locale migration failed");
@@ -180,9 +198,9 @@ describe("migrateConfig (orchestration)", () => {
       throw clientError;
     });
 
-    await expect(migrateConfig({ options: mockOptions })).rejects.toThrow(
-      "Failed to create client",
-    );
+    await expect(
+      migrateConfig({ options: mockOptions, models: mockModels }),
+    ).rejects.toThrow("Failed to create client");
 
     // Should not call other functions if client creation fails
     expect(handleLocales).not.toHaveBeenCalled();
@@ -196,7 +214,7 @@ describe("migrateConfig (orchestration)", () => {
       environmentId: "",
     };
 
-    await migrateConfig({ options: emptyOptions });
+    await migrateConfig({ options: emptyOptions, models: mockModels });
 
     expect(createManagementClient).toHaveBeenCalledWith(emptyOptions);
     expect(handleLocales).toHaveBeenCalledWith({
@@ -207,7 +225,68 @@ describe("migrateConfig (orchestration)", () => {
     expect(migrateModels).toHaveBeenCalledWith({
       client: mockClient,
       options: emptyOptions,
-      models: undefined,
+      models: mockModels,
     });
+  });
+
+  it("should load models from modelsPath and call functions with loaded models", async () => {
+    await migrateConfig({
+      options: mockOptions,
+      modelsPath: "./src/models",
+    });
+
+    expect(loadModels).toHaveBeenCalledWith({ modelsPath: "./src/models" });
+    expect(createManagementClient).toHaveBeenCalledWith(mockOptions);
+    expect(handleLocales).toHaveBeenCalledWith({
+      client: mockClient,
+      options: mockOptions,
+      locales: mockLocales,
+    });
+    expect(migrateModels).toHaveBeenCalledWith({
+      client: mockClient,
+      options: mockOptions,
+      models: mockModels,
+    });
+  });
+
+  it("should prefer modelsPath over provided models when both are present", async () => {
+    const customModels = [
+      {
+        sys: { id: "customModel" },
+        name: "Custom Model",
+        description: "A custom model",
+        displayField: "name",
+        fields: [
+          {
+            id: "name",
+            name: "Name",
+            type: "Symbol",
+            required: true,
+            localized: false,
+          },
+        ],
+      },
+    ];
+
+    // Use type assertion to test runtime behavior when both are provided
+    await migrateConfig({
+      options: mockOptions,
+      models: customModels,
+      modelsPath: "./src/models", // This should take precedence
+    } as any);
+
+    // loadModels should be called when modelsPath is provided (takes precedence)
+    expect(loadModels).toHaveBeenCalledWith({ modelsPath: "./src/models" });
+    expect(migrateModels).toHaveBeenCalledWith({
+      client: mockClient,
+      options: mockOptions,
+      models: mockModels, // These come from loadModels mock, not customModels
+    });
+  });
+
+  it("should throw error when neither models nor modelsPath is provided", async () => {
+    await expect(
+      migrateConfig({ options: mockOptions } as any),
+    ).rejects.toThrow("Either 'modelsPath' or 'models' must be provided");
   });
 });

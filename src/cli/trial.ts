@@ -26,7 +26,6 @@ export const trialCommand = new Command("trial")
   )
   .action(async (options) => {
     try {
-      // Get configuration from options or environment variables
       const spaceId = options.spaceId || process.env.CONTENTFUL_SPACE_ID;
       const accessToken =
         options.accessToken || process.env.CONTENTFUL_MANAGEMENT_TOKEN;
@@ -47,24 +46,22 @@ export const trialCommand = new Command("trial")
         process.exit(1);
       }
 
-      console.log(`🧪 Starting trial run...`);
+      console.log(`🔍 Running trial migration...`);
       console.log(`   Space: ${spaceId}`);
       console.log(`   Environment: ${environmentId}`);
-      console.log(`   Models Path: ${options.models}`);
+      console.log(`   Models path: ${options.models}`);
       console.log("");
 
-      const result = await trialMigration({
+      const report = await trialMigration({
+        modelsPath: options.models,
         options: {
           spaceId,
           accessToken,
           environmentId,
         },
-        modelsPath: options.models,
       });
 
-      console.log("");
-      console.log("✅ Trial run completed successfully!");
-      console.log(result);
+      console.log(report);
     } catch (error) {
       console.error("❌ Trial run failed:", error);
       process.exit(1);

@@ -91,12 +91,26 @@ export const blogPost: ContentModel = {
 
 ### Migrate to Contentful
 
+Both `migrateConfig` and `trialMigration` support flexible interfaces - you can provide either pre-loaded models or a path to the models
+
 ```typescript
 import { migrateConfig } from "contentful-code-models";
 import { models } from "./src/models";
 
+// Option 1: Use pre-loaded models
 await migrateConfig({
   models,
+  locales,
+  options: {
+    spaceId: process.env.CONTENTFUL_SPACE_ID!,
+    accessToken: process.env.CONTENTFUL_MANAGEMENT_TOKEN!,
+    environmentId: process.env.CONTENTFUL_ENVIRONMENT!,
+  },
+});
+
+// Option 2: Provide models path (models & locales will be loaded automatically)
+await migrateConfig({
+  modelsPath: "./src/models",
   options: {
     spaceId: process.env.CONTENTFUL_SPACE_ID!,
     accessToken: process.env.CONTENTFUL_MANAGEMENT_TOKEN!,
@@ -110,6 +124,20 @@ await migrateConfig({
 ```typescript
 import { trialMigration } from "contentful-code-models";
 
+// Option 1: Use pre-loaded models
+import { models, locales } from "./src/models";
+
+const report = await trialMigration({
+  options: {
+    spaceId: process.env.CONTENTFUL_SPACE_ID!,
+    accessToken: process.env.CONTENTFUL_MANAGEMENT_TOKEN!,
+    environmentId: "master",
+  },
+  models,
+  locales,
+});
+
+// Option 2: Provide models path (models & locales will be loaded automatically)
 const report = await trialMigration({
   options: {
     spaceId: process.env.CONTENTFUL_SPACE_ID!,
@@ -120,7 +148,7 @@ const report = await trialMigration({
 });
 
 console.log(report);
-// Remember to manually delete trial environment
+// Remember to double check that trial environment has been deleted
 ```
 
 ## 🔧 Field Types & Validation
@@ -202,7 +230,8 @@ Creates a temporary environment and performs a real migration to test changes sa
 - `options.accessToken: string` - Contentful Management API token
 - `options.spaceId: string` - Contentful space ID
 - `options.environmentId: string` - Base environment ID to copy from
-- `modelsPath: string` - Path to local models directory
+- `models: ContentModel[]` - Array of content model definitions
+- `locales?: CreateLocaleProps[]` - Optional array of locale definitions
 
 **Returns:** `Promise<string>` - Trial report with migration results
 

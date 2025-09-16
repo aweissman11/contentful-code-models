@@ -1,8 +1,7 @@
+import "dotenv/config";
 import { models, locales } from "../models";
 import { migrateConfig } from "../utils";
 import { options } from "./options";
-
-import "dotenv/config";
 
 migrateConfig({
   models,

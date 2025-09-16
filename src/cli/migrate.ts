@@ -1,6 +1,5 @@
 import { Command } from "commander";
 import { migrateConfig } from "../utils/migrateConfig.js";
-import { loadModels } from "../utils/loadModels.js";
 import "dotenv/config";
 
 export const migrateCommand = new Command("migrate")
@@ -52,14 +51,8 @@ export const migrateCommand = new Command("migrate")
       console.log(`   Models path: ${options.models}`);
       console.log("");
 
-      // Load models from the specified directory
-      const { models, locales } = await loadModels({
-        modelsPath: options.models,
-      });
-
       await migrateConfig({
-        models,
-        locales,
+        modelsPath: options.models,
         options: {
           spaceId,
           accessToken,
@@ -68,7 +61,6 @@ export const migrateCommand = new Command("migrate")
       });
 
       console.log("\n✅ Migration completed successfully!");
-      console.log(`🎉 ${models?.length} model(s) synced to Contentful`);
     } catch (error) {
       console.error("\n❌ Migration failed:\n", error);
       process.exit(1);

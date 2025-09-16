@@ -3,22 +3,57 @@ import { ContentModel } from "../types";
 import { createManagementClient } from "./createManagementClient";
 import { migrateModels } from "./migrateFunctions/migrateModels";
 import { handleLocales } from "./migrateFunctions/migrateLocales";
+import { loadModels } from "./loadModels";
 import { ContentfulClientOptions } from "../types/ClientOptions";
 
-export const migrateConfig = async ({
-  options,
-  models,
-  locales,
-}: {
+interface MigrateOptionsWithModels {
   options: ContentfulClientOptions;
-  models?: ContentModel[];
+  models: ContentModel[];
   locales?: CreateLocaleProps[];
-}): Promise<PlainClientAPI> => {
-  const client = createManagementClient(options);
+}
 
-  await handleLocales({ client, options, locales });
+interface MigrateOptionsWithPath {
+  options: ContentfulClientOptions;
+  modelsPath: string;
+}
 
-  await migrateModels({ client, options, models });
+type MigrateOptions = MigrateOptionsWithModels | MigrateOptionsWithPath;
+
+export const migrateConfig = async (
+  migrateOptions: MigrateOptions,
+): Promise<PlainClientAPI> => {
+  const client = createManagementClient(migrateOptions.options);
+
+  // Determine models and locales to use
+  let models: ContentModel[] | undefined;
+  let locales: CreateLocaleProps[] | undefined;
+
+  if ("modelsPath" in migrateOptions) {
+    // Load models from path
+    console.log("\n📦 Loading local models...");
+    const modelsResult = await loadModels({
+      modelsPath: migrateOptions.modelsPath,
+    });
+    console.log(`   ✅ Found ${modelsResult.count} local model files`);
+    models = modelsResult.models;
+    locales = modelsResult.locales;
+  } else if (
+    "models" in migrateOptions &&
+    Array.isArray(migrateOptions.models)
+  ) {
+    // Use provided models (specific models provided)
+    console.log(
+      `\n📦 Using ${migrateOptions.models.length} provided models...`,
+    );
+    models = migrateOptions.models;
+    locales = migrateOptions.locales;
+  } else {
+    throw new Error("Either 'modelsPath' or 'models' must be provided");
+  }
+
+  await handleLocales({ client, options: migrateOptions.options, locales });
+
+  await migrateModels({ client, options: migrateOptions.options, models });
 
   return client;
 };
