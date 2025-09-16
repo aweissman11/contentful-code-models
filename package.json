@@ -51,6 +51,7 @@
     "cli:test": "npm run build && node dist/cli/index.js --help",
     "sync": "tsx ./src/scripts/runSync.ts && npm run format",
     "migrate": "tsx ./src/scripts/runMigrate.ts",
+    "trial": "tsx ./src/scripts/runTrial.ts",
     "prepare": "husky"
   },
   "dependencies": {

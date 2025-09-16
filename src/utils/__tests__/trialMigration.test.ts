@@ -19,7 +19,7 @@ vi.spyOn(console, "error").mockImplementation(() => {});
 describe("trialMigration", () => {
   const mockClient = {
     environment: {
-      create: vi.fn(),
+      createWithId: vi.fn(),
       get: vi.fn(),
       delete: vi.fn(),
     },
@@ -88,7 +88,7 @@ describe("trialMigration", () => {
 
   it("should successfully create trial environment and run migration", async () => {
     // Mock environment creation and readiness
-    mockClient.environment.create.mockResolvedValue({
+    mockClient.environment.createWithId.mockResolvedValue({
       sys: { id: "test-trial-env" },
     });
 
@@ -118,8 +118,11 @@ describe("trialMigration", () => {
     );
 
     // Verify environment creation was called correctly
-    expect(mockClient.environment.create).toHaveBeenCalledWith(
-      { spaceId: "test-space" },
+    expect(mockClient.environment.createWithId).toHaveBeenCalledWith(
+      {
+        spaceId: "test-space",
+        environmentId: expect.stringMatching(/^trial-\d+$/),
+      },
       expect.objectContaining({
         name: expect.stringMatching(/^trial-\d+$/),
       }),
@@ -130,7 +133,7 @@ describe("trialMigration", () => {
   });
 
   it("should handle environment creation failure", async () => {
-    mockClient.environment.create.mockRejectedValue(
+    mockClient.environment.createWithId.mockRejectedValue(
       new Error("Environment creation failed"),
     );
 
@@ -140,7 +143,7 @@ describe("trialMigration", () => {
   });
 
   it("should wait for environment to be ready", async () => {
-    mockClient.environment.create.mockResolvedValue({
+    mockClient.environment.createWithId.mockResolvedValue({
       sys: { id: "test-trial-env" },
     });
 
@@ -162,7 +165,7 @@ describe("trialMigration", () => {
   });
 
   it("should timeout if environment doesn't become ready", async () => {
-    mockClient.environment.create.mockResolvedValue({
+    mockClient.environment.createWithId.mockResolvedValue({
       sys: { id: "test-trial-env" },
     });
 
@@ -176,7 +179,7 @@ describe("trialMigration", () => {
   }, 70000); // 70 second timeout for this test
 
   it("should handle migration errors and attempt cleanup", async () => {
-    mockClient.environment.create.mockResolvedValue({
+    mockClient.environment.createWithId.mockResolvedValue({
       sys: { id: "test-trial-env" },
     });
 
@@ -206,7 +209,7 @@ describe("trialMigration", () => {
       models: [],
     };
 
-    mockClient.environment.create.mockResolvedValue({
+    mockClient.environment.createWithId.mockResolvedValue({
       sys: { id: "test-trial-env" },
     });
 
@@ -225,7 +228,7 @@ describe("trialMigration", () => {
   });
 
   it("should handle verification errors and include them in report", async () => {
-    mockClient.environment.create.mockResolvedValue({
+    mockClient.environment.createWithId.mockResolvedValue({
       sys: { id: "test-trial-env" },
     });
 
@@ -249,7 +252,7 @@ describe("trialMigration", () => {
   });
 
   it("should handle cleanup failure gracefully", async () => {
-    mockClient.environment.create.mockResolvedValue({
+    mockClient.environment.createWithId.mockResolvedValue({
       sys: { id: "test-trial-env" },
     });
 
@@ -274,7 +277,7 @@ describe("trialMigration", () => {
 
   it("should successfully run trial migration with modelsPath", async () => {
     // Mock environment creation and readiness
-    mockClient.environment.create.mockResolvedValue({
+    mockClient.environment.createWithId.mockResolvedValue({
       sys: { id: "test-trial-env" },
     });
 

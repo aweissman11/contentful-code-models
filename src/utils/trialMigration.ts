@@ -127,8 +127,11 @@ async function createTrialEnvironment(
   options: ContentfulClientOptions,
 ): Promise<string> {
   try {
-    const newEnvironment = await client.environment.create(
-      { spaceId: options.spaceId },
+    const newEnvironment = await client.environment.createWithId(
+      {
+        spaceId: options.spaceId,
+        environmentId: `trial-${Date.now()}`,
+      },
       {
         name: `trial-${Date.now()}`,
       },
