@@ -1,5 +1,11 @@
 # contentful-code-models
 
+## 2.2.3
+
+### Patch Changes
+
+- 2f67caa: Better temp env naming
+
 ## 2.2.2
 
 ### Patch Changes
