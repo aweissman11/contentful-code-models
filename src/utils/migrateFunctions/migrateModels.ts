@@ -1,10 +1,12 @@
 import {
   ContentTypeProps,
+  Control,
   EditorInterfaceProps,
   PlainClientAPI,
 } from "contentful-management";
 import cloneDeep from "lodash/cloneDeep.js";
 import merge from "lodash/merge.js";
+import reduce from "lodash/reduce.js";
 import { ContentModel } from "../../types";
 import { ContentfulClientOptions } from "../../types/ClientOptions";
 
@@ -145,7 +147,28 @@ export const migrateModels = async ({
             (e) => e.sys.contentType.sys.id === model.sys.id,
           );
           if (editor && model && model.editorInterface) {
-            const mergedEditor = merge({}, editor, model.editorInterface);
+            const createControlMap = (controls: Control[] = []) =>
+              reduce<Control, Record<string, Control>>(
+                controls,
+                (controlMap, control) => {
+                  controlMap[control.fieldId] = control;
+                  return controlMap;
+                },
+                {},
+              );
+
+            const existingControls = createControlMap(editor.controls);
+            const modelControls = createControlMap(
+              model.editorInterface.controls,
+            );
+
+            const mergedControls = merge({}, existingControls, modelControls);
+
+            const mergedEditor = {
+              ...merge({}, editor, model.editorInterface),
+              controls: Object.values(mergedControls),
+            };
+
             const updatedEditor = await client.editorInterface.update(
               {
                 ...options,
