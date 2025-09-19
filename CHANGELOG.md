@@ -1,5 +1,11 @@
 # contentful-code-models
 
+## 2.2.4
+
+### Patch Changes
+
+- f9602d4: editor merge bug fix
+
 ## 2.2.3
 
 ### Patch Changes
