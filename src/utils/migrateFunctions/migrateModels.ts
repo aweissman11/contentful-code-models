@@ -147,29 +147,28 @@ export const migrateModels = async ({
             (e) => e.sys.contentType.sys.id === model.sys.id,
           );
           if (editor && model && model.editorInterface) {
-            const mergedEditorControls = merge(
-              {},
+            const createControlMap = (controls: Control[] = []) =>
               reduce<Control, Record<string, Control>>(
-                editor.controls ?? [],
-                (map, control) => {
-                  map[control.fieldId] = control;
-                  return map;
+                controls,
+                (controlMap, control) => {
+                  controlMap[control.fieldId] = control;
+                  return controlMap;
                 },
                 {},
-              ) ?? {},
-              reduce<Control, Record<string, Control>>(
-                model.editorInterface.controls ?? [],
-                (map, control) => {
-                  map[control.fieldId] = control;
-                  return map;
-                },
-                {},
-              ),
+              );
+
+            const existingControls = createControlMap(editor.controls);
+            const modelControls = createControlMap(
+              model.editorInterface.controls,
             );
+
+            const mergedControls = merge({}, existingControls, modelControls);
+
             const mergedEditor = {
               ...merge({}, editor, model.editorInterface),
-              controls: Object.values(mergedEditorControls),
+              controls: Object.values(mergedControls),
             };
+
             const updatedEditor = await client.editorInterface.update(
               {
                 ...options,
