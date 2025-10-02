@@ -9,6 +9,7 @@ import merge from "lodash/merge.js";
 import reduce from "lodash/reduce.js";
 import { ContentModel } from "../../types";
 import { ContentfulClientOptions } from "../../types/ClientOptions";
+import { API_MAX_LIMIT_QUERY } from "../../constants";
 
 export const migrateModels = async ({
   client,
@@ -25,8 +26,12 @@ export const migrateModels = async ({
     let createdContentTypes: string[] = [];
 
     try {
-      let contentModels = await client.contentType.getMany({});
-      const editorInterfaces = await client.editorInterface.getMany({});
+      let contentModels = await client.contentType.getMany({
+        query: API_MAX_LIMIT_QUERY,
+      });
+      const editorInterfaces = await client.editorInterface.getMany({
+        query: API_MAX_LIMIT_QUERY,
+      });
 
       originalContentTypes = contentModels.items.reduce<{
         [key: string]: ContentTypeProps;
@@ -65,7 +70,9 @@ export const migrateModels = async ({
       }
 
       // Now update all models that exist in the space, including those created above
-      contentModels = await client.contentType.getMany({});
+      contentModels = await client.contentType.getMany({
+        query: API_MAX_LIMIT_QUERY,
+      });
 
       for (const model of models) {
         const existingContentType = contentModels.items.find(

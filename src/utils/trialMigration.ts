@@ -6,6 +6,7 @@ import { setTimeout } from "timers/promises";
 import { ContentfulClientOptions } from "../types/ClientOptions.js";
 import { ContentModel } from "../types/index.js";
 import { CreateLocaleProps } from "contentful-management/dist/typings/entities/locale.js";
+import { API_MAX_LIMIT_QUERY } from "../constants.js";
 
 interface TrialOptionsWithModels {
   options: ContentfulClientOptions;
@@ -182,7 +183,9 @@ async function verifyMigrationResults(
       environmentId,
     });
 
-    const contentTypes = await trialClient.contentType.getMany({});
+    const contentTypes = await trialClient.contentType.getMany({
+      query: API_MAX_LIMIT_QUERY,
+    });
 
     const results = {
       contentTypesCreated: 0,
