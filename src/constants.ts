@@ -1,1 +1,1 @@
-export const API_MAX_LIMIT_QUERY = { limit: 1000 } as const;
+export const API_LIMIT_MAX = 1000 as const;
