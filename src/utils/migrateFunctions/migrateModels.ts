@@ -25,6 +25,13 @@ export const migrateModels = async ({
     let originalEditorInterfaces: Record<string, EditorInterfaceProps> = {};
     let createdContentTypes: string[] = [];
 
+    if (models.length > API_MAX_LIMIT_QUERY.limit) {
+      const limitError =
+        "This package does not support migrations above 1000 models.";
+      console.error(limitError);
+      throw new Error(limitError);
+    }
+
     try {
       let contentModels = await client.contentType.getMany({
         query: API_MAX_LIMIT_QUERY,
