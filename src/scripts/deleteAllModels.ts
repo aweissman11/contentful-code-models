@@ -1,3 +1,4 @@
+import { API_LIMIT_MAX } from "../constants";
 import createManagementClient from "../utils/createManagementClient";
 import { options } from "./options";
 
@@ -11,7 +12,9 @@ import { options } from "./options";
 const deleteAllModels = async () => {
   const client = createManagementClient(options);
 
-  const allModels = await client.contentType.getMany({});
+  const allModels = await client.contentType.getMany({
+    query: { limit: API_LIMIT_MAX },
+  });
 
   for (const model of allModels.items) {
     try {

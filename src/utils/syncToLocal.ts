@@ -5,6 +5,7 @@ import { createManagementClient } from "./createManagementClient";
 import { syncModels } from "./syncFunctions/syncModels";
 import { createModelsIndexFile } from "./syncFunctions/createModelsIndexFile";
 import { ContentfulClientOptions } from "../types/ClientOptions";
+import { API_LIMIT_MAX } from "../constants";
 
 export const syncToLocal = async ({
   modelsBasePath,
@@ -25,7 +26,9 @@ export const syncToLocal = async ({
     client,
   });
 
-  const locales = (await client.locale.getMany({})).items;
+  const locales = (
+    await client.locale.getMany({ query: { limit: API_LIMIT_MAX } })
+  ).items;
 
   await createModelsIndexFile({
     modelsDir,

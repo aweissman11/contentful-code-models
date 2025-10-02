@@ -9,6 +9,7 @@ import merge from "lodash/merge.js";
 import reduce from "lodash/reduce.js";
 import { ContentModel } from "../../types";
 import { ContentfulClientOptions } from "../../types/ClientOptions";
+import { API_LIMIT_MAX } from "../../constants";
 
 export const migrateModels = async ({
   client,
@@ -24,9 +25,20 @@ export const migrateModels = async ({
     let originalEditorInterfaces: Record<string, EditorInterfaceProps> = {};
     let createdContentTypes: string[] = [];
 
+    if (models.length > API_LIMIT_MAX) {
+      const limitError =
+        "This package does not support migrations above 1000 models.";
+      console.error(limitError);
+      throw new Error(limitError);
+    }
+
     try {
-      let contentModels = await client.contentType.getMany({});
-      const editorInterfaces = await client.editorInterface.getMany({});
+      let contentModels = await client.contentType.getMany({
+        query: { limit: API_LIMIT_MAX },
+      });
+      const editorInterfaces = await client.editorInterface.getMany({
+        query: { limit: API_LIMIT_MAX },
+      });
 
       originalContentTypes = contentModels.items.reduce<{
         [key: string]: ContentTypeProps;
@@ -65,7 +77,9 @@ export const migrateModels = async ({
       }
 
       // Now update all models that exist in the space, including those created above
-      contentModels = await client.contentType.getMany({});
+      contentModels = await client.contentType.getMany({
+        query: { limit: API_LIMIT_MAX },
+      });
 
       for (const model of models) {
         const existingContentType = contentModels.items.find(
