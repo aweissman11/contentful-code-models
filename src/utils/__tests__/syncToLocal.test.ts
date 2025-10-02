@@ -5,6 +5,7 @@ import { createManagementClient } from "../createManagementClient";
 import { syncModels } from "../syncFunctions/syncModels";
 import { createModelsIndexFile } from "../syncFunctions/createModelsIndexFile";
 import path from "path";
+import { API_LIMIT_MAX } from "../../constants";
 
 // Mock dependencies
 vi.mock("../createManagementClient");
@@ -82,7 +83,11 @@ describe("syncToLocal", () => {
       modelsDir: "/test/models",
       client: mockClient,
     });
-    expect(mockClient.locale.getMany).toHaveBeenCalledWith({});
+    expect(mockClient.locale.getMany).toHaveBeenCalledWith({
+      query: {
+        limit: API_LIMIT_MAX,
+      },
+    });
     expect(createModelsIndexFile).toHaveBeenCalledWith({
       modelsDir: "/test/models",
       contentModels: mockContentModels,

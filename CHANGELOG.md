@@ -1,5 +1,11 @@
 # contentful-code-models
 
+## 2.2.5
+
+### Patch Changes
+
+- ce9345b: query limit bug
+
 ## 2.2.4
 
 ### Patch Changes
